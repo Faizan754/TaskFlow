@@ -24,7 +24,6 @@ export function AuthProvider({ children }: Props) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log("AuthProvider mounted!");
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
       setLoading(false);
