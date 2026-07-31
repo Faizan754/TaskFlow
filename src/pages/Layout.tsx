@@ -1,11 +1,10 @@
-import { Outlet } from "react-router-dom";
+import { Outlet } from "react-router";
+import Navbar from "./Navbar";
 
 function Layout() {
   return (
     <div>
-      <h1 className="text-3xl font bold text-blue-600">
-        This is the layout page!
-      </h1>
+      <Navbar />
       <Outlet />
     </div>
   );

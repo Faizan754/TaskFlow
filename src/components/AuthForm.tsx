@@ -1,5 +1,5 @@
 import { useState, type SubmitEvent } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 interface AuthFormProps {
   title: string;
