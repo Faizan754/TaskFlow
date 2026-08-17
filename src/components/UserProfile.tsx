@@ -1,19 +1,11 @@
-import {
-  Button,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuItems,
-} from "@headlessui/react";
-import type { User } from "@supabase/supabase-js";
-import { Link, Navigate, useNavigate } from "react-router";
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+import { Link, useNavigate } from "react-router";
+import { useAuth } from "../context/AuthContext";
 import { supabase } from "../lib/supabaseClient";
+import Loading from "./Loading";
 
-interface Props {
-  user: User | null;
-}
-
-const UserProfile = ({ user }: Props) => {
+const UserProfile = () => {
+  const { user, loading } = useAuth();
   const navigate = useNavigate();
   const handleOnClick = () => {
     supabase.auth
@@ -27,9 +19,9 @@ const UserProfile = ({ user }: Props) => {
       {/* Profile dropdown */}
       <Menu as="div" className="relative ml-3">
         <div className="flex flex-row gap-2 justify-between items-center">
-          <h1 className="text-3xl font bold text-white">
-            {username ? username : "Your Name"}
-          </h1>
+          <span className="text-3xl font-bold text-white">
+            {username ? username : "Unknown"}
+          </span>
           <MenuButton className="relative flex rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
             <span className="absolute -inset-1.5" />
             <span className="sr-only">Open user menu</span>
@@ -45,7 +37,9 @@ const UserProfile = ({ user }: Props) => {
           transition
           className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-gray-800 py-1 outline -outline-offset-1 outline-white/10 transition data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
         >
-          {!user ? (
+          {loading ? (
+            <Loading />
+          ) : !user ? (
             <div>
               <MenuItem>
                 <Link
