@@ -8,6 +8,7 @@ import Loading from "../components/Loading";
 import ErrorMessage from "../components/ErrorMessage";
 import { getCards } from "../services/cardService";
 import type { Card } from "../entities/Cards";
+import AddCard from "../components/AddCard";
 
 const BoardPage = () => {
   const { boardId } = useParams<{ boardId: string }>();
@@ -113,6 +114,16 @@ const BoardPage = () => {
                   ))}
                 </ul>
               )}
+
+              <AddCard
+                columnId={column.id}
+                position={
+                  columnCards.length === 0
+                    ? 0
+                    : Math.max(...columnCards.map((card) => card.position)) + 1
+                }
+                onCardCreated={(card) => setCards((prev) => [...prev, card])}
+              />
             </div>
           );
         })}
