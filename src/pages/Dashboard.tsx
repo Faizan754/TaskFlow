@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getBoards } from "../services/boardService";
-import { type Board } from "../services/boardService";
+import { type Board } from "../entities/Boards";
 import Loading from "../components/Loading";
 import CreateBoard from "../components/CreateBoard";
 import { Link } from "react-router";
