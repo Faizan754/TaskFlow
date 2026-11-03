@@ -11,7 +11,7 @@ const ProtectedRoute = ({ children }: Props) => {
   const { user, loading } = useAuth();
 
   if (loading) {
-    <Loading />
+    return <Loading />;
   }
 
   if (!user) {
