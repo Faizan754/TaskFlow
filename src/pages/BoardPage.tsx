@@ -33,14 +33,14 @@ const BoardPage = () => {
         setCards(cardResult);
       } catch (err) {
         if (err instanceof Error) {
-          console.log(err.message);
+          console.error(err.message);
           setError(err.message);
         } else {
-          console.log("Unexpected error occured", err);
+          console.error("Unexpected error occurred", err);
           setError("An unexpected error occurred");
         }
       } finally {
-        () => setLoading(false);
+        setLoading(false);
       }
     }
     load();
@@ -73,23 +73,49 @@ const BoardPage = () => {
       </h1>
 
       <div className="flex flex-col gap-6 md:flex-row">
-        {columns.map((column) => (
-          <div
-            key={column.id}
-            className="flex-1 rounded-lg border border-gray-200 bg-white p-4 shadow-sm"
-          >
-            <div className="mb-4 flex items-center justify-between border-b border-gray-200 pb-2">
-              <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-700">
-                {column.title}
-              </h3>
-              <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-500">
-                0
-              </span>
-            </div>
+        {columns.map((column) => {
+          const columnCards = cards.filter(
+            (card) => card.column_id === column.id,
+          );
 
-            <p className="text-sm italic text-gray-400">No tasks yet</p>
-          </div>
-        ))}
+          return (
+            <div
+              key={column.id}
+              className="flex-1 rounded-lg border border-gray-200 bg-white p-4 shadow-sm"
+            >
+              <div className="mb-4 flex items-center justify-between border-b border-gray-200 pb-2">
+                <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-700">
+                  {column.title}
+                </h3>
+                <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-500">
+                  {columnCards.length}
+                </span>
+              </div>
+
+              {columnCards.length === 0 ? (
+                <p className="text-sm italic text-gray-400">No tasks yet</p>
+              ) : (
+                <ul className="space-y-2">
+                  {columnCards.map((card) => (
+                    <li
+                      key={card.id}
+                      className="rounded-md border border-gray-200 bg-gray-50 p-3 shadow-sm"
+                    >
+                      <h4 className="text-sm font-medium text-gray-800">
+                        {card.title}
+                      </h4>
+                      {card.description && (
+                        <p className="mt-1 text-xs text-gray-500">
+                          {card.description}
+                        </p>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
