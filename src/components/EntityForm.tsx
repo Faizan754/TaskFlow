@@ -12,6 +12,9 @@ interface Props {
   submittingLabel?: string;
   showDescription?: boolean;
   errorMessage?: string;
+  initialTitle?: string;
+  initialDescription?: string;
+  resetOnSuccess?: boolean;
   onSubmit: (values: EntityFormValues) => Promise<void>;
   onCancel?: () => void;
 }
@@ -26,12 +29,15 @@ const EntityForm = ({
   submittingLabel = "Saving...",
   showDescription = false,
   errorMessage = "Something went wrong. Please try again.",
+  initialTitle = "",
+  initialDescription = "",
+  resetOnSuccess = true,
   onSubmit,
   onCancel,
 }: Props) => {
   const titleId = useId();
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+  const [title, setTitle] = useState(initialTitle);
+  const [description, setDescription] = useState(initialDescription);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -47,8 +53,10 @@ const EntityForm = ({
         title: trimmedTitle,
         description: description.trim(),
       });
-      setTitle("");
-      setDescription("");
+      if (resetOnSuccess) {
+        setTitle("");
+        setDescription("");
+      }
     } catch (err) {
       console.error(err);
       setError(errorMessage);

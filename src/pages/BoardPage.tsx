@@ -9,6 +9,7 @@ import ErrorMessage from "../components/ErrorMessage";
 import { getCards } from "../services/cardService";
 import type { Card } from "../entities/Cards";
 import AddCard from "../components/AddCard";
+import CardModal from "../components/CardModal";
 
 const BoardPage = () => {
   const { boardId } = useParams<{ boardId: string }>();
@@ -17,6 +18,7 @@ const BoardPage = () => {
   const [cards, setCards] = useState<Card[]>([]);
   const [columns, setColumns] = useState<Column[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedCard, setSelectedCard] = useState<Card | null>(null);
 
   useEffect(() => {
     async function load() {
@@ -98,18 +100,21 @@ const BoardPage = () => {
               ) : (
                 <ul className="space-y-2">
                   {columnCards.map((card) => (
-                    <li
-                      key={card.id}
-                      className="rounded-md border border-gray-200 bg-gray-50 p-3 shadow-sm"
-                    >
-                      <h4 className="text-sm font-medium text-gray-800">
-                        {card.title}
-                      </h4>
-                      {card.description && (
-                        <p className="mt-1 text-xs text-gray-500">
-                          {card.description}
-                        </p>
-                      )}
+                    <li key={card.id}>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedCard(card)}
+                        className="w-full rounded-md border border-gray-200 bg-gray-50 p-3 text-left shadow-sm hover:bg-gray-100"
+                      >
+                        <h4 className="text-sm font-medium text-gray-800">
+                          {card.title}
+                        </h4>
+                        {card.description && (
+                          <p className="mt-1 text-xs text-gray-500">
+                            {card.description}
+                          </p>
+                        )}
+                      </button>
                     </li>
                   ))}
                 </ul>
@@ -128,6 +133,18 @@ const BoardPage = () => {
           );
         })}
       </div>
+      <CardModal
+        card={selectedCard}
+        onClose={() => setSelectedCard(null)}
+        onUpdated={(updated) =>
+          setCards((prev) =>
+            prev.map((card) => (card.id === updated.id ? updated : card)),
+          )
+        }
+        onDeleted={(id) =>
+          setCards((prev) => prev.filter((card) => card.id !== id))
+        }
+      />
     </div>
   );
 };

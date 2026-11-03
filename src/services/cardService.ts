@@ -8,6 +8,12 @@ interface CreateCardInput {
   position: number;
 }
 
+interface UpdateCardInput {
+  id: string;
+  title: string;
+  description: string;
+}
+
 export async function getCards(columnIds: string[]): Promise<Card[]> {
   if (columnIds.length === 0) {
     return [];
@@ -43,4 +49,28 @@ export async function createCard({
     throw error;
   }
   return data;
+}
+
+export async function updateCard({
+  id,
+  title,
+  description,
+}: UpdateCardInput): Promise<Card> {
+  const { data, error } = await supabase
+    .from("cards")
+    .update({ title, description: description || null })
+    .eq("id", id)
+    .select()
+    .single();
+  if (error) {
+    throw error;
+  }
+  return data;
+}
+
+export async function deleteCard(id: string): Promise<void> {
+  const { error } = await supabase.from("cards").delete().eq("id", id);
+  if (error) {
+    throw error;
+  }
 }
