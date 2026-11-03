@@ -6,6 +6,7 @@ import Layout from "./pages/Layout";
 import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AuthLayout from "./pages/auth/AuthLayout";
+import BoardPage from "./pages/BoardPage";
 
 const router = createBrowserRouter([
   {
@@ -18,6 +19,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <Dashboard />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "board/:boardId",
+        element: (
+          <ProtectedRoute>
+            <BoardPage />
           </ProtectedRoute>
         ),
       },

@@ -1,11 +1,5 @@
 import { supabase } from "../lib/supabaseClient";
-
-export interface Board {
-  id: string;
-  user_id: string;
-  title: string;
-  created_at: string;
-}
+import { type Board } from "../entities/Boards";
 
 interface CreateBoard {
   userId: string;
@@ -14,6 +8,18 @@ interface CreateBoard {
 
 export async function getBoards(): Promise<Board[]> {
   const { data, error } = await supabase.from("boards").select("*");
+  if (error) {
+    throw error;
+  }
+  return data;
+}
+
+export async function getBoard(boardId: string): Promise<Board | null> {
+  const { data, error } = await supabase
+    .from("boards")
+    .select("*")
+    .eq("id", boardId)
+    .maybeSingle();
   if (error) {
     throw error;
   }
@@ -34,5 +40,14 @@ export async function createBoard({
   if (error) {
     throw error;
   }
-  return data[0];
+  const board = data[0];
+  const { error: columnsError } = await supabase.from("columns").insert([
+    { board_id: board.id, title: "To Do", position: 0 },
+    { board_id: board.id, title: "In Progress", position: 1 },
+    { board_id: board.id, title: "Done", position: 2 },
+  ]);
+  if (columnsError) {
+    throw columnsError;
+  }
+  return board;
 }
