@@ -1,15 +1,47 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router";
+import {
+  DndContext,
+  DragOverlay,
+  KeyboardSensor,
+  MouseSensor,
+  TouchSensor,
+  closestCorners,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+  type DragOverEvent,
+  type DragStartEvent,
+} from "@dnd-kit/core";
+import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { getColumns } from "../services/columnService";
 import { getBoard } from "../services/boardService";
+import { getCards, moveCard } from "../services/cardService";
 import { type Column } from "../entities/Columns";
 import { type Board } from "../entities/Boards";
+import type { Card } from "../entities/Cards";
 import Loading from "../components/Loading";
 import ErrorMessage from "../components/ErrorMessage";
-import { getCards } from "../services/cardService";
-import type { Card } from "../entities/Cards";
-import AddCard from "../components/AddCard";
+import BoardColumn from "../components/BoardColumn";
+import CardItem from "../components/CardItem";
 import CardModal from "../components/CardModal";
+
+// Array order within a column is the display order. This makes each
+// card's `position` equal to its index in its column.
+function withNormalizedPositions(cards: Card[]): Card[] {
+  const counters = new Map<string, number>();
+  return cards.map((card) => {
+    const index = counters.get(card.column_id) ?? 0;
+    counters.set(card.column_id, index + 1);
+    return card.position === index ? card : { ...card, position: index };
+  });
+}
+
+function indexInColumn(cards: Card[], cardId: string, columnId: string) {
+  return cards
+    .filter((card) => card.column_id === columnId)
+    .findIndex((card) => card.id === cardId);
+}
 
 const BoardPage = () => {
   const { boardId } = useParams<{ boardId: string }>();
@@ -19,6 +51,20 @@ const BoardPage = () => {
   const [columns, setColumns] = useState<Column[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
+  const [activeCard, setActiveCard] = useState<Card | null>(null);
+  const [moveError, setMoveError] = useState<string | null>(null);
+  const dragSnapshot = useRef<Card[] | null>(null);
+
+  // Hooks must stay above the early returns below.
+  const sensors = useSensors(
+    useSensor(MouseSensor, { activationConstraint: { distance: 6 } }),
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: 200, tolerance: 8 },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  );
 
   useEffect(() => {
     async function load() {
@@ -48,6 +94,110 @@ const BoardPage = () => {
     }
     load();
   }, [boardId]);
+
+  const handleDragStart = ({ active }: DragStartEvent) => {
+    setMoveError(null);
+    dragSnapshot.current = cards;
+    setActiveCard(cards.find((card) => card.id === String(active.id)) ?? null);
+  };
+
+  // While dragging across columns, move the card into the hovered column
+  // so the list reshuffles live.
+  const handleDragOver = ({ active, over }: DragOverEvent) => {
+    console.log("dragOver", active.id, over?.id);
+    if (!over) return;
+    const activeId = String(active.id);
+    const overId = String(over.id);
+    if (activeId === overId) return;
+
+    const dragged = cards.find((card) => card.id === activeId);
+    if (!dragged) return;
+
+    const overCard = cards.find((card) => card.id === overId);
+    const targetColumnId = overCard
+      ? overCard.column_id
+      : columns.find((column) => column.id === overId)?.id;
+
+    if (!targetColumnId || targetColumnId === dragged.column_id) return;
+
+    setCards((prev) => {
+      const withoutDragged = prev.filter((card) => card.id !== activeId);
+      const moved = { ...dragged, column_id: targetColumnId };
+
+      if (!overCard) return [...withoutDragged, moved];
+
+      const overIndex = withoutDragged.findIndex((card) => card.id === overId);
+      const draggedRect = active.rect.current.translated;
+      const isBelowOver = draggedRect
+        ? draggedRect.top > over.rect.top + over.rect.height / 2
+        : false;
+      const insertAt = overIndex + (isBelowOver ? 1 : 0);
+
+      return [
+        ...withoutDragged.slice(0, insertAt),
+        moved,
+        ...withoutDragged.slice(insertAt),
+      ];
+    });
+  };
+
+  const handleDragEnd = async ({ active, over }: DragEndEvent) => {
+    const snapshot = dragSnapshot.current;
+    dragSnapshot.current = null;
+    setActiveCard(null);
+
+    if (!snapshot) return;
+    if (!over) {
+      setCards(snapshot);
+      return;
+    }
+
+    const activeId = String(active.id);
+    const overId = String(over.id);
+
+    let next = cards;
+    const activeIndex = next.findIndex((card) => card.id === activeId);
+    const overIndex = next.findIndex((card) => card.id === overId);
+    if (
+      activeIndex !== -1 &&
+      overIndex !== -1 &&
+      activeIndex !== overIndex &&
+      next[activeIndex].column_id === next[overIndex].column_id
+    ) {
+      next = arrayMove(next, activeIndex, overIndex);
+    }
+    next = withNormalizedPositions(next);
+    setCards(next);
+
+    const before = snapshot.find((card) => card.id === activeId);
+    const after = next.find((card) => card.id === activeId);
+    if (!before || !after) return;
+
+    const beforeIndex = indexInColumn(snapshot, activeId, before.column_id);
+    const afterIndex = indexInColumn(next, activeId, after.column_id);
+    if (before.column_id === after.column_id && beforeIndex === afterIndex) {
+      return; // dropped back where it started
+    }
+
+    try {
+      await moveCard({
+        cardId: activeId,
+        targetColumnId: after.column_id,
+        targetIndex: afterIndex,
+      });
+    } catch (err) {
+      console.error(err);
+      setCards(snapshot);
+      setMoveError("Couldn't save that move, so the card was put back.");
+    }
+  };
+
+  const handleDragCancel = () => {
+    if (dragSnapshot.current) setCards(dragSnapshot.current);
+    dragSnapshot.current = null;
+    setActiveCard(null);
+  };
+
   if (loading) {
     return <Loading />;
   }
@@ -75,64 +225,41 @@ const BoardPage = () => {
         Board: <span className="text-blue-600">{board.title}</span>
       </h1>
 
-      <div className="flex flex-col gap-6 md:flex-row">
-        {columns.map((column) => {
-          const columnCards = cards.filter(
-            (card) => card.column_id === column.id,
-          );
+      {moveError && (
+        <p className="mb-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
+          {moveError}
+        </p>
+      )}
 
-          return (
-            <div
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCorners}
+        onDragStart={handleDragStart}
+        onDragOver={handleDragOver}
+        onDragEnd={handleDragEnd}
+        onDragCancel={handleDragCancel}
+      >
+        <div className="flex flex-col gap-6 md:flex-row">
+          {columns.map((column) => (
+            <BoardColumn
               key={column.id}
-              className="flex-1 rounded-lg border border-gray-200 bg-white p-4 shadow-sm"
-            >
-              <div className="mb-4 flex items-center justify-between border-b border-gray-200 pb-2">
-                <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-700">
-                  {column.title}
-                </h3>
-                <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-500">
-                  {columnCards.length}
-                </span>
-              </div>
+              column={column}
+              cards={cards.filter((card) => card.column_id === column.id)}
+              onCardClick={setSelectedCard}
+              onCardCreated={(card) => setCards((prev) => [...prev, card])}
+            />
+          ))}
+        </div>
 
-              {columnCards.length === 0 ? (
-                <p className="text-sm italic text-gray-400">No tasks yet</p>
-              ) : (
-                <ul className="space-y-2">
-                  {columnCards.map((card) => (
-                    <li key={card.id}>
-                      <button
-                        type="button"
-                        onClick={() => setSelectedCard(card)}
-                        className="w-full rounded-md border border-gray-200 bg-gray-50 p-3 text-left shadow-sm hover:bg-gray-100"
-                      >
-                        <h4 className="text-sm font-medium text-gray-800">
-                          {card.title}
-                        </h4>
-                        {card.description && (
-                          <p className="mt-1 text-xs text-gray-500">
-                            {card.description}
-                          </p>
-                        )}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              )}
-
-              <AddCard
-                columnId={column.id}
-                position={
-                  columnCards.length === 0
-                    ? 0
-                    : Math.max(...columnCards.map((card) => card.position)) + 1
-                }
-                onCardCreated={(card) => setCards((prev) => [...prev, card])}
-              />
+        <DragOverlay>
+          {activeCard ? (
+            <div className="rotate-2 cursor-grabbing shadow-lg">
+              <CardItem card={activeCard} />
             </div>
-          );
-        })}
-      </div>
+          ) : null}
+        </DragOverlay>
+      </DndContext>
+
       <CardModal
         card={selectedCard}
         onClose={() => setSelectedCard(null)}

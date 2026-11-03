@@ -14,6 +14,12 @@ interface UpdateCardInput {
   description: string;
 }
 
+interface MoveCardInput {
+  cardId: string;
+  targetColumnId: string;
+  targetIndex: number;
+}
+
 export async function getCards(columnIds: string[]): Promise<Card[]> {
   if (columnIds.length === 0) {
     return [];
@@ -70,6 +76,21 @@ export async function updateCard({
 
 export async function deleteCard(id: string): Promise<void> {
   const { error } = await supabase.from("cards").delete().eq("id", id);
+  if (error) {
+    throw error;
+  }
+}
+
+export async function moveCard({
+  cardId,
+  targetColumnId,
+  targetIndex,
+}: MoveCardInput): Promise<void> {
+  const { error } = await supabase.rpc("move_card", {
+    p_card_id: cardId,
+    p_target_column_id: targetColumnId,
+    p_target_index: targetIndex,
+  });
   if (error) {
     throw error;
   }
