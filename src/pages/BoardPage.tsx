@@ -25,6 +25,7 @@ import ErrorMessage from "../components/ErrorMessage";
 import BoardColumn from "../components/BoardColumn";
 import CardItem from "../components/CardItem";
 import CardModal from "../components/CardModal";
+import AddColumn from "../components/AddColumn";
 
 function withNormalizedPositions(cards: Card[]): Card[] {
   const counters = new Map<string, number>();
@@ -241,8 +242,30 @@ const BoardPage = () => {
               cards={cards.filter((card) => card.column_id === column.id)}
               onCardClick={setSelectedCard}
               onCardCreated={(card) => setCards((prev) => [...prev, card])}
+              onRenamed={(updated) =>
+                setColumns((prev) =>
+                  prev.map((item) => (item.id === updated.id ? updated : item)),
+                )
+              }
+              onDeleted={(id) => {
+                setColumns((prev) => prev.filter((item) => item.id !== id));
+                setCards((prev) =>
+                  prev.filter((card) => card.column_id !== id),
+                );
+              }}
             />
           ))}
+          <AddColumn
+            boardId={board.id}
+            position={
+              columns.length === 0
+                ? 0
+                : Math.max(...columns.map((item) => item.position)) + 1
+            }
+            onColumnCreated={(column) =>
+              setColumns((prev) => [...prev, column])
+            }
+          />
         </div>
 
         <DragOverlay>
