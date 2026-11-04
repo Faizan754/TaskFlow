@@ -26,8 +26,6 @@ import BoardColumn from "../components/BoardColumn";
 import CardItem from "../components/CardItem";
 import CardModal from "../components/CardModal";
 
-// Array order within a column is the display order. This makes each
-// card's `position` equal to its index in its column.
 function withNormalizedPositions(cards: Card[]): Card[] {
   const counters = new Map<string, number>();
   return cards.map((card) => {
@@ -55,7 +53,6 @@ const BoardPage = () => {
   const [moveError, setMoveError] = useState<string | null>(null);
   const dragSnapshot = useRef<Card[] | null>(null);
 
-  // Hooks must stay above the early returns below.
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 6 } }),
     useSensor(TouchSensor, {
@@ -101,10 +98,7 @@ const BoardPage = () => {
     setActiveCard(cards.find((card) => card.id === String(active.id)) ?? null);
   };
 
-  // While dragging across columns, move the card into the hovered column
-  // so the list reshuffles live.
   const handleDragOver = ({ active, over }: DragOverEvent) => {
-    console.log("dragOver", active.id, over?.id);
     if (!over) return;
     const activeId = String(active.id);
     const overId = String(over.id);
@@ -176,7 +170,7 @@ const BoardPage = () => {
     const beforeIndex = indexInColumn(snapshot, activeId, before.column_id);
     const afterIndex = indexInColumn(next, activeId, after.column_id);
     if (before.column_id === after.column_id && beforeIndex === afterIndex) {
-      return; // dropped back where it started
+      return;
     }
 
     try {
