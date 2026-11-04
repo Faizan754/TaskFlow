@@ -56,7 +56,11 @@ const CardModalContent = ({
         }}
       />
 
-      <SubtaskList cardId={card.id} />
+      <SubtaskList
+        cardId={card.id}
+        cardTitle={card.title}
+        cardDescription={card.description}
+      />
 
       <div className="border-t border-gray-200 pt-4">
         {confirming ? (

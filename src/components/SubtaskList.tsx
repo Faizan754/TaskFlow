@@ -2,21 +2,36 @@ import { useEffect, useState, type SubmitEvent } from "react";
 import type { Subtask } from "../entities/Subtasks";
 import {
   createSubtask,
+  createSubtasks,
   deleteSubtask,
   getSubtasks,
   toggleSubtask,
 } from "../services/subtaskService";
+import { suggestSubtasks, type LlmProvider } from "../services/aiService";
 
 interface Props {
   cardId: string;
+  cardTitle: string;
+  cardDescription: string | null;
 }
 
-const SubtaskList = ({ cardId }: Props) => {
+interface Suggestion {
+  text: string;
+  checked: boolean;
+}
+
+const SubtaskList = ({ cardId, cardTitle, cardDescription }: Props) => {
   const [subtasks, setSubtasks] = useState<Subtask[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [newTitle, setNewTitle] = useState("");
   const [adding, setAdding] = useState(false);
+
+  const [provider, setProvider] = useState<LlmProvider>("gemini");
+  const [suggesting, setSuggesting] = useState(false);
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+  const [savingSuggestions, setSavingSuggestions] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -36,6 +51,11 @@ const SubtaskList = ({ cardId }: Props) => {
     };
   }, [cardId]);
 
+  const nextPosition =
+    subtasks.length === 0
+      ? 0
+      : Math.max(...subtasks.map((subtask) => subtask.position)) + 1;
+
   const handleAdd = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     const title = newTitle.trim();
@@ -44,11 +64,11 @@ const SubtaskList = ({ cardId }: Props) => {
     setAdding(true);
     setError(null);
     try {
-      const position =
-        subtasks.length === 0
-          ? 0
-          : Math.max(...subtasks.map((subtask) => subtask.position)) + 1;
-      const created = await createSubtask({ cardId, title, position });
+      const created = await createSubtask({
+        cardId,
+        title,
+        position: nextPosition,
+      });
       setSubtasks((prev) => [...prev, created]);
       setNewTitle("");
     } catch (err) {
@@ -80,6 +100,52 @@ const SubtaskList = ({ cardId }: Props) => {
     } catch (err) {
       console.error(err);
       setError("Couldn't delete the subtask. Please try again.");
+    }
+  };
+
+  const handleSuggest = async () => {
+    setSuggesting(true);
+    setAiError(null);
+    try {
+      const result = await suggestSubtasks({
+        title: cardTitle,
+        description: cardDescription,
+        provider,
+      });
+      setSuggestions(result.map((text) => ({ text, checked: true })));
+    } catch (err) {
+      console.error(err);
+      setAiError(
+        "Couldn't get suggestions right now. Please try again in a moment.",
+      );
+    } finally {
+      setSuggesting(false);
+    }
+  };
+
+  const selectedTitles = suggestions
+    .filter((suggestion) => suggestion.checked)
+    .map((suggestion) => suggestion.text.trim())
+    .filter(Boolean);
+
+  const handleAcceptSuggestions = async () => {
+    if (selectedTitles.length === 0 || savingSuggestions) return;
+
+    setSavingSuggestions(true);
+    setAiError(null);
+    try {
+      const created = await createSubtasks({
+        cardId,
+        titles: selectedTitles,
+        startPosition: nextPosition,
+      });
+      setSubtasks((prev) => [...prev, ...created]);
+      setSuggestions([]);
+    } catch (err) {
+      console.error(err);
+      setAiError("Couldn't save the suggestions. Please try again.");
+    } finally {
+      setSavingSuggestions(false);
     }
   };
 
@@ -147,6 +213,90 @@ const SubtaskList = ({ cardId }: Props) => {
           Add
         </button>
       </form>
+
+      <div className="space-y-2">
+        <div className="flex items-center gap-2">
+          <select
+            value={provider}
+            onChange={(e) => setProvider(e.target.value as LlmProvider)}
+            aria-label="AI provider"
+            className="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900"
+          >
+            <option value="gemini">Gemini</option>
+            <option value="groq">Groq</option>
+          </select>
+          <button
+            type="button"
+            onClick={handleSuggest}
+            disabled={suggesting}
+            className="rounded-md border border-blue-600 px-3 py-1.5 text-sm font-semibold text-blue-600 hover:bg-blue-50 disabled:opacity-50"
+          >
+            {suggesting ? "Thinking..." : "Suggest subtasks"}
+          </button>
+        </div>
+
+        {aiError && <p className="text-xs text-red-600">{aiError}</p>}
+
+        {suggestions.length > 0 && (
+          <div className="space-y-2 rounded-md border border-blue-200 bg-blue-50 p-3">
+            <p className="text-xs font-semibold text-blue-800">
+              Suggestions: edit or untick before adding
+            </p>
+            <ul className="space-y-1">
+              {suggestions.map((suggestion, index) => (
+                <li key={index} className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={suggestion.checked}
+                    onChange={() =>
+                      setSuggestions((prev) =>
+                        prev.map((item, i) =>
+                          i === index
+                            ? { ...item, checked: !item.checked }
+                            : item,
+                        ),
+                      )
+                    }
+                    className="h-4 w-4 cursor-pointer"
+                  />
+                  <input
+                    value={suggestion.text}
+                    onChange={(e) =>
+                      setSuggestions((prev) =>
+                        prev.map((item, i) =>
+                          i === index
+                            ? { ...item, text: e.target.value }
+                            : item,
+                        ),
+                      )
+                    }
+                    className="flex-1 rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-900"
+                  />
+                </li>
+              ))}
+            </ul>
+            <div className="flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setSuggestions([])}
+                className="rounded-md px-3 py-1.5 text-sm text-gray-600 hover:bg-white"
+              >
+                Discard
+              </button>
+              <button
+                type="button"
+                onClick={handleAcceptSuggestions}
+                disabled={savingSuggestions || selectedTitles.length === 0}
+                className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
+              >
+                {savingSuggestions
+                  ? "Adding..."
+                  : `Add selected (${selectedTitles.length})`}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

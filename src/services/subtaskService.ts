@@ -7,6 +7,12 @@ interface CreateSubtaskInput {
   position: number;
 }
 
+interface CreateSubtasksInput {
+  cardId: string;
+  titles: string[];
+  startPosition: number;
+}
+
 export async function getSubtasks(cardId: string): Promise<Subtask[]> {
   const { data, error } = await supabase
     .from("subtasks")
@@ -56,4 +62,25 @@ export async function deleteSubtask(id: string): Promise<void> {
   if (error) {
     throw error;
   }
+}
+
+export async function createSubtasks({
+  cardId,
+  titles,
+  startPosition,
+}: CreateSubtasksInput): Promise<Subtask[]> {
+  const { data, error } = await supabase
+    .from("subtasks")
+    .insert(
+      titles.map((title, index) => ({
+        card_id: cardId,
+        title,
+        position: startPosition + index,
+      })),
+    )
+    .select();
+  if (error) {
+    throw error;
+  }
+  return data.sort((a, b) => a.position - b.position);
 }
