@@ -1,4 +1,4 @@
-import { type Card } from "../entities/Cards";
+import type { Card, Priority } from "../entities/Cards";
 import { supabase } from "../lib/supabaseClient";
 
 interface CreateCardInput {
@@ -12,6 +12,7 @@ interface UpdateCardInput {
   id: string;
   title: string;
   description: string;
+  priority: Priority | null;
 }
 
 interface MoveCardInput {
@@ -61,10 +62,11 @@ export async function updateCard({
   id,
   title,
   description,
+  priority,
 }: UpdateCardInput): Promise<Card> {
   const { data, error } = await supabase
     .from("cards")
-    .update({ title, description: description || null })
+    .update({ title, description: description || null, priority })
     .eq("id", id)
     .select()
     .single();

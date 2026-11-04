@@ -1,9 +1,10 @@
 import { useState } from "react";
 import Modal from "./Modal";
 import EntityForm from "./EntityForm";
-import { updateCard, deleteCard } from "../services/cardService";
-import type { Card } from "../entities/Cards";
+import PrioritySelect from "./PrioritySelect";
 import SubtaskList from "./SubtaskList";
+import { updateCard, deleteCard } from "../services/cardService";
+import type { Card, Priority } from "../entities/Cards";
 
 interface Props {
   card: Card | null;
@@ -18,6 +19,7 @@ const CardModalContent = ({
   onUpdated,
   onDeleted,
 }: Omit<Props, "card"> & { card: Card }) => {
+  const [priority, setPriority] = useState<Priority | null>(card.priority);
   const [confirming, setConfirming] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
@@ -48,9 +50,15 @@ const CardModalContent = ({
         initialDescription={card.description ?? ""}
         resetOnSuccess={false}
         errorMessage="Couldn't save the card. Please try again."
+        extraFields={<PrioritySelect value={priority} onChange={setPriority} />}
         onCancel={onClose}
         onSubmit={async ({ title, description }) => {
-          const updated = await updateCard({ id: card.id, title, description });
+          const updated = await updateCard({
+            id: card.id,
+            title,
+            description,
+            priority,
+          });
           onUpdated(updated);
           onClose();
         }}

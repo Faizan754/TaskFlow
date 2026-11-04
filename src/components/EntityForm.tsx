@@ -1,4 +1,4 @@
-import { useId, useState, type SubmitEvent } from "react";
+import { useId, useState, type ReactNode, type SubmitEvent } from "react";
 
 export interface EntityFormValues {
   title: string;
@@ -15,6 +15,7 @@ interface Props {
   initialTitle?: string;
   initialDescription?: string;
   resetOnSuccess?: boolean;
+  extraFields?: ReactNode;
   onSubmit: (values: EntityFormValues) => Promise<void>;
   onCancel?: () => void;
 }
@@ -32,6 +33,7 @@ const EntityForm = ({
   initialTitle = "",
   initialDescription = "",
   resetOnSuccess = true,
+  extraFields,
   onSubmit,
   onCancel,
 }: Props) => {
@@ -95,6 +97,7 @@ const EntityForm = ({
             rows={2}
           />
         )}
+        {extraFields}
         {error && <p className="text-sm text-red-600">{error}</p>}
       </div>
 
