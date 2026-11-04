@@ -3,6 +3,7 @@ import Modal from "./Modal";
 import EntityForm from "./EntityForm";
 import { updateCard, deleteCard } from "../services/cardService";
 import type { Card } from "../entities/Cards";
+import SubtaskList from "./SubtaskList";
 
 interface Props {
   card: Card | null;
@@ -54,6 +55,8 @@ const CardModalContent = ({
           onClose();
         }}
       />
+
+      <SubtaskList cardId={card.id} />
 
       <div className="border-t border-gray-200 pt-4">
         {confirming ? (
