@@ -51,3 +51,17 @@ export async function createBoard({
   }
   return board;
 }
+
+export async function deleteBoard(id: string): Promise<void> {
+  const { data, error } = await supabase
+    .from("boards")
+    .delete()
+    .eq("id", id)
+    .select("id");
+  if (error) {
+    throw error;
+  }
+  if (data.length === 0) {
+    throw new Error("Board not found or not allowed to delete it");
+  }
+}
