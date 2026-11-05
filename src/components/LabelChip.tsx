@@ -3,9 +3,13 @@ import { labelColorClasses } from "../lib/labelColors";
 
 const LabelChip = ({ label }: { label: Label }) => (
   <span
-    className={`rounded-full px-2 py-0.5 text-xs font-medium ${labelColorClasses[label.color].chip}`}
+    className={`inline-flex h-[22px] max-w-full items-center gap-1.5 rounded-md pr-2 pl-[7px] text-xs leading-none font-semibold ${labelColorClasses[label.color].chip}`}
   >
-    {label.name}
+    <span
+      aria-hidden="true"
+      className="size-[7px] shrink-0 rounded-[2px] bg-current"
+    />
+    <span className="truncate">{label.name}</span>
   </span>
 );
 

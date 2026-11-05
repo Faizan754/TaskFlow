@@ -30,6 +30,8 @@ import { getLabels, getCardLabels } from "../services/labelService";
 import type { Label, CardLabel } from "../entities/Labels";
 import LabelManager from "../components/LabelManager";
 import Modal from "../components/Modal";
+import { CircleAlert, Tag } from "lucide-react";
+import { alertDanger, btnBase, btnMd, btnSecondary } from "../lib/ui";
 
 function withNormalizedPositions(cards: Card[]): Card[] {
   const counters = new Map<string, number>();
@@ -218,41 +220,51 @@ const BoardPage = () => {
   }
   if (error) {
     return (
-      <ErrorMessage
-        content="Something went wrong while loading this board. Please try again or go back to "
-        link="dashboard"
-        linkText="Dashboard"
-      />
+      <div className="mx-auto w-full max-w-[1240px] px-10 pt-12 max-md:px-4 max-md:pt-8">
+        <ErrorMessage
+          content="Something went wrong while loading this board. Please try again or go back to "
+          link="dashboard"
+          linkText="Dashboard"
+        />
+      </div>
     );
   }
   if (board === null) {
     return (
-      <ErrorMessage
-        content="Board not found! Return to "
-        linkText="Dashboard"
-        link="dashboard"
-      />
+      <div className="mx-auto w-full max-w-[1240px] px-10 pt-12 max-md:px-4 max-md:pt-8">
+        <ErrorMessage
+          content="Board not found! Return to "
+          linkText="Dashboard"
+          link="dashboard"
+        />
+      </div>
     );
   }
   return (
-    <div className="mx-auto w-full max-w-5xl p-6">
-      <div className="mb-8 flex items-center justify-between gap-4">
-        <h1 className="text-2xl font-bold text-gray-800">
-          Board: <span className="text-blue-600">{board.title}</span>
-        </h1>
-        <button
-          type="button"
-          onClick={() => setIsLabelsOpen(true)}
-          className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-semibold text-gray-700 hover:bg-gray-50"
-        >
-          Manage labels
-        </button>
+    <div className="flex min-w-0 flex-1 flex-col">
+      <div className="flex flex-col gap-2.5 px-10 pt-6 pb-4 max-md:px-4 max-md:pt-4">
+        <div className="flex flex-wrap items-center gap-3">
+          <h1 className="mr-auto min-w-0 font-display text-[36px] leading-[44px] font-bold tracking-tight break-words text-fg max-md:text-[28px] max-md:leading-9">
+            {board.title}
+          </h1>
+          <button
+            type="button"
+            onClick={() => setIsLabelsOpen(true)}
+            className={`${btnBase} ${btnMd} ${btnSecondary}`}
+          >
+            <Tag aria-hidden="true" className="size-4" />
+            Manage labels
+          </button>
+        </div>
       </div>
 
       {moveError && (
-        <p className="mb-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
-          {moveError}
-        </p>
+        <div className="px-10 pb-3 max-md:px-4">
+          <p role="alert" className={alertDanger}>
+            <CircleAlert aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
+            {moveError}
+          </p>
+        </div>
       )}
 
       <DndContext
@@ -263,7 +275,7 @@ const BoardPage = () => {
         onDragEnd={handleDragEnd}
         onDragCancel={handleDragCancel}
       >
-        <div className="flex flex-col gap-6 md:flex-row">
+        <div className="flex items-start gap-4 overflow-x-auto snap-x snap-proximity px-10 pt-1 pb-8 max-md:gap-3 max-md:px-4 max-md:pb-6">
           {columns.map((column) => (
             <BoardColumn
               key={column.id}
@@ -300,7 +312,7 @@ const BoardPage = () => {
 
         <DragOverlay>
           {activeCard ? (
-            <div className="rotate-2 cursor-grabbing shadow-lg">
+            <div className="rotate-3 scale-[1.02] cursor-grabbing rounded-xl shadow-drag motion-reduce:rotate-0 motion-reduce:scale-100 [&>button]:cursor-grabbing [&>button]:border-primary!">
               <CardItem
                 card={activeCard}
                 labels={labelsForCard(activeCard.id)}

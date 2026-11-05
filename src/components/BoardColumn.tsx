@@ -10,6 +10,32 @@ import { deleteColumn, renameColumn } from "../services/columnService";
 import SortableCard from "./SortableCard";
 import AddCard from "./AddCard";
 import type { Label } from "../entities/Labels";
+import {
+  CircleAlert,
+  LoaderCircle,
+  Pencil,
+  SquareKanban,
+  Trash2,
+} from "lucide-react";
+import {
+  btnBase,
+  btnDanger,
+  btnGhost,
+  btnGhostDanger,
+  btnIconSm,
+  btnPrimary,
+  btnSecondary,
+  btnSm,
+  fieldError,
+  inputSm,
+} from "../lib/ui";
+
+const dotClasses = [
+  "bg-[var(--sw-gray)]",
+  "bg-[var(--sw-blue)]",
+  "bg-[var(--sw-green)]",
+  "bg-[var(--sw-purple)]",
+] as const;
 
 interface Props {
   column: Column;
@@ -94,14 +120,14 @@ const BoardColumn = ({
   return (
     <div
       ref={setNodeRef}
-      className="flex-1 rounded-lg border border-gray-200 bg-white p-4 shadow-sm"
+      className="flex w-[304px] shrink-0 snap-start flex-col gap-2 rounded-2xl border border-transparent bg-surface-sunken p-2.5"
     >
-      <div className="mb-4 border-b border-gray-200 pb-2">
-        <div className="flex items-center justify-between gap-2">
+      <div>
+        <div className="flex min-h-9 items-center gap-2 pt-1 pr-0.5 pb-1.5 pl-1.5">
           {isRenaming ? (
             <form
               onSubmit={handleRename}
-              className="flex flex-1 items-center gap-2"
+              className="flex flex-1 items-center gap-1.5"
             >
               <input
                 autoFocus
@@ -111,45 +137,51 @@ const BoardColumn = ({
                   if (e.key === "Escape") cancelRename();
                 }}
                 aria-label="Column title"
-                className="min-w-0 flex-1 rounded border border-gray-300 px-2 py-1 text-sm text-gray-900"
+                className={inputSm}
               />
               <button
                 type="submit"
                 disabled={busy || !titleDraft.trim()}
-                className="text-xs font-semibold text-blue-600 disabled:opacity-50"
+                className={`${btnBase} ${btnSm} ${btnPrimary}`}
               >
                 Save
               </button>
               <button
                 type="button"
                 onClick={cancelRename}
-                className="text-xs text-gray-500 hover:text-gray-700"
+                className={`${btnBase} ${btnSm} ${btnGhost}`}
               >
                 Cancel
               </button>
             </form>
           ) : (
             <>
-              <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-700">
+              <span
+                aria-hidden="true"
+                className={`size-2 shrink-0 rounded-full ${dotClasses[((column.position % 4) + 4) % 4]}`}
+              />
+              <h2 className="min-w-0 truncate font-display text-sm font-semibold tracking-tight text-fg">
                 {column.title}
-              </h3>
-              <div className="flex items-center gap-2">
-                <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-500">
-                  {cards.length}
-                </span>
+              </h2>
+              <span className="inline-grid h-[22px] min-w-[22px] place-content-center rounded-full border border-border bg-surface px-[7px] text-xs font-semibold text-muted">
+                {cards.length}
+              </span>
+              <div className="ml-auto flex">
                 <button
                   type="button"
                   onClick={startRename}
-                  className="text-xs text-gray-400 hover:text-gray-700"
+                  aria-label={`Rename column ${column.title}`}
+                  className={`${btnBase} ${btnIconSm} ${btnGhost}`}
                 >
-                  Rename
+                  <Pencil aria-hidden="true" className="size-4" />
                 </button>
                 <button
                   type="button"
                   onClick={() => setConfirmingDelete(true)}
-                  className="text-xs text-gray-400 hover:text-red-600"
+                  aria-label={`Delete column ${column.title}`}
+                  className={`${btnBase} ${btnIconSm} ${btnGhostDanger}`}
                 >
-                  Delete
+                  <Trash2 aria-hidden="true" className="size-4" />
                 </button>
               </div>
             </>
@@ -157,7 +189,7 @@ const BoardColumn = ({
         </div>
 
         {confirmingDelete && (
-          <div className="mt-2 rounded-md bg-red-50 p-2 text-xs text-red-800">
+          <div className="mt-1 flex flex-col gap-2 rounded-xl bg-danger-soft p-3 text-[13px] text-fg">
             <p>
               Delete this column
               {cards.length > 0
@@ -165,20 +197,26 @@ const BoardColumn = ({
                 : ""}
               ? This can't be undone.
             </p>
-            <div className="mt-2 flex gap-2">
+            <div className="flex gap-2">
               <button
                 type="button"
                 onClick={handleDelete}
                 disabled={busy}
-                className="rounded bg-red-600 px-2 py-1 font-semibold text-white disabled:opacity-60"
+                className={`${btnBase} ${btnSm} ${btnDanger}`}
               >
-                {busy ? "Deleting..." : "Delete"}
+                {busy && (
+                  <LoaderCircle
+                    aria-hidden="true"
+                    className="size-4 animate-spin motion-reduce:animate-none"
+                  />
+                )}
+                {busy ? "Deleting…" : "Delete"}
               </button>
               <button
                 type="button"
                 onClick={() => setConfirmingDelete(false)}
                 disabled={busy}
-                className="rounded px-2 py-1 text-gray-700 hover:bg-red-100"
+                className={`${btnBase} ${btnSm} ${btnSecondary}`}
               >
                 Keep
               </button>
@@ -186,14 +224,19 @@ const BoardColumn = ({
           </div>
         )}
 
-        {error && <p className="mt-2 text-xs text-red-600">{error}</p>}
+        {error && (
+          <p className={`mt-2 ${fieldError}`}>
+            <CircleAlert aria-hidden="true" className="size-4 shrink-0" />
+            {error}
+          </p>
+        )}
       </div>
 
       <SortableContext
         items={cards.map((card) => card.id)}
         strategy={verticalListSortingStrategy}
       >
-        <ul className="min-h-8 space-y-2">
+        <ul className="flex min-h-8 flex-col gap-2">
           {cards.map((card) => (
             <SortableCard
               key={card.id}
@@ -206,7 +249,15 @@ const BoardColumn = ({
       </SortableContext>
 
       {cards.length === 0 && (
-        <p className="text-sm italic text-gray-400">No tasks yet</p>
+        <div className="flex flex-col items-center gap-1.5 rounded-xl border-[1.5px] border-dashed border-border-strong px-3 py-7 text-center">
+          <SquareKanban aria-hidden="true" className="size-5 text-muted" />
+          <span className="text-[13px] leading-[18px] font-semibold text-fg">
+            No cards yet
+          </span>
+          <span className="text-xs text-muted">
+            Drag a card here or add one below.
+          </span>
+        </div>
       )}
 
       <AddCard

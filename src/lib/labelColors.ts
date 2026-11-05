@@ -15,12 +15,36 @@ export const labelColorClasses: Record<
   LabelColor,
   { chip: string; swatch: string }
 > = {
-  gray: { chip: "bg-gray-200 text-gray-800", swatch: "bg-gray-400" },
-  red: { chip: "bg-red-100 text-red-800", swatch: "bg-red-500" },
-  orange: { chip: "bg-orange-100 text-orange-800", swatch: "bg-orange-500" },
-  yellow: { chip: "bg-yellow-100 text-yellow-800", swatch: "bg-yellow-400" },
-  green: { chip: "bg-green-100 text-green-800", swatch: "bg-green-500" },
-  blue: { chip: "bg-blue-100 text-blue-800", swatch: "bg-blue-500" },
-  purple: { chip: "bg-purple-100 text-purple-800", swatch: "bg-purple-500" },
-  pink: { chip: "bg-pink-100 text-pink-800", swatch: "bg-pink-500" },
+  gray: {
+    chip: "bg-[var(--l-gray-bg)] text-[var(--l-gray-fg)]",
+    swatch: "bg-[var(--sw-gray)]",
+  },
+  red: {
+    chip: "bg-[var(--l-red-bg)] text-[var(--l-red-fg)]",
+    swatch: "bg-[var(--sw-red)]",
+  },
+  orange: {
+    chip: "bg-[var(--l-orange-bg)] text-[var(--l-orange-fg)]",
+    swatch: "bg-[var(--sw-orange)]",
+  },
+  yellow: {
+    chip: "bg-[var(--l-yellow-bg)] text-[var(--l-yellow-fg)]",
+    swatch: "bg-[var(--sw-yellow)]",
+  },
+  green: {
+    chip: "bg-[var(--l-green-bg)] text-[var(--l-green-fg)]",
+    swatch: "bg-[var(--sw-green)]",
+  },
+  blue: {
+    chip: "bg-[var(--l-blue-bg)] text-[var(--l-blue-fg)]",
+    swatch: "bg-[var(--sw-blue)]",
+  },
+  purple: {
+    chip: "bg-[var(--l-purple-bg)] text-[var(--l-purple-fg)]",
+    swatch: "bg-[var(--sw-purple)]",
+  },
+  pink: {
+    chip: "bg-[var(--l-pink-bg)] text-[var(--l-pink-fg)]",
+    swatch: "bg-[var(--sw-pink)]",
+  },
 };

@@ -13,21 +13,23 @@ const CardItem = ({ card, labels, onClick }: Props) => (
   <button
     type="button"
     onClick={onClick}
-    className="w-full rounded-md border border-gray-200 bg-gray-50 p-3 text-left shadow-sm hover:bg-gray-100"
+    className="flex w-full cursor-grab flex-col gap-2.5 rounded-xl border border-border bg-surface-raised px-3.5 py-3 text-left text-fg shadow-sm transition-[box-shadow,border-color] duration-150 hover:border-border-strong hover:shadow-md motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
   >
-    <div className="flex items-start justify-between gap-2">
-      <h4 className="text-sm font-medium text-gray-800">{card.title}</h4>
-      {card.priority && <PriorityBadge priority={card.priority} />}
-    </div>
+    <span className="text-sm leading-5 font-semibold break-words">
+      {card.title}
+    </span>
     {card.description && (
-      <p className="mt-1 text-xs text-gray-500">{card.description}</p>
+      <span className="line-clamp-2 text-[13px] leading-[18px] text-muted">
+        {card.description}
+      </span>
     )}
-    {labels && labels.length > 0 && (
-      <div className="mt-2 flex flex-wrap gap-1">
-        {labels.map((label) => (
+    {(card.priority || (labels && labels.length > 0)) && (
+      <span className="flex flex-wrap items-center gap-1.5">
+        {card.priority && <PriorityBadge priority={card.priority} />}
+        {labels?.map((label) => (
           <LabelChip key={label.id} label={label} />
         ))}
-      </div>
+      </span>
     )}
   </button>
 );
