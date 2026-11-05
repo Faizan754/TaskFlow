@@ -43,7 +43,8 @@ const Dashboard = () => {
     getBoards()
       .then((res) => setBoards(res))
       .catch((err) => {
-        (console.log(err.message), setError(err));
+        console.log(err.message);
+        setError(err);
       })
       .finally(() => setLoading(false));
   }, []);
