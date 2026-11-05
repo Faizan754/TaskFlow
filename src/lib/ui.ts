@@ -59,3 +59,6 @@ export const textLink =
   "rounded-sm font-semibold text-primary-text hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";
 export const authHeading =
   "font-display text-2xl leading-8 font-semibold tracking-tight text-fg max-md:text-[21px] max-md:leading-7";
+// Fills the space below the navbar and centers the auth card in it.
+export const authPage =
+  "flex flex-1 items-center justify-center px-4 py-10 max-md:py-6";

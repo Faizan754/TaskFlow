@@ -8,6 +8,7 @@ import {
   alertDanger,
   authCard,
   authHeading,
+  authPage,
   btnBase,
   btnLg,
   btnPrimary,
@@ -34,7 +35,7 @@ const ResetPassword = () => {
 
   if (!user) {
     return (
-      <div className="flex flex-1 items-start justify-center px-4 pt-8 pb-16 max-md:pt-6 max-md:pb-10">
+      <div className={authPage}>
         <div className={authCard}>
           <div className={iconTileDanger}>
             <TriangleAlert aria-hidden="true" className="size-6" />
@@ -93,7 +94,7 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="flex flex-1 items-start justify-center px-4 pt-8 pb-16 max-md:pt-6 max-md:pb-10">
+    <div className={authPage}>
       <div className={authCard}>
         <div>
           <h1 className={authHeading}>
@@ -120,6 +121,7 @@ const ResetPassword = () => {
                 id="password"
                 name="password"
                 type="password"
+                autoComplete="new-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -141,6 +143,7 @@ const ResetPassword = () => {
                 id="confirm"
                 name="confirm"
                 type="password"
+                autoComplete="new-password"
                 value={confirm}
                 onChange={(e) => setConfirm(e.target.value)}
                 required

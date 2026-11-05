@@ -14,6 +14,7 @@ import {
   alertInfo,
   authCard,
   authHeading,
+  authPage,
   btnBase,
   btnGhost,
   btnLg,
@@ -59,7 +60,7 @@ const ForgotPassword = () => {
 
   if (sent) {
     return (
-      <div className="flex flex-1 items-start justify-center px-4 pt-8 pb-16 max-md:pt-6 max-md:pb-10">
+      <div className={authPage}>
         <div className={authCard}>
           <div className={iconTileSuccess}>
             <Mail aria-hidden="true" className="size-6" />
@@ -90,7 +91,7 @@ const ForgotPassword = () => {
   }
 
   return (
-    <div className="flex flex-1 items-start justify-center px-4 pt-8 pb-16 max-md:pt-6 max-md:pb-10">
+    <div className={authPage}>
       <div className={authCard}>
         <div className={iconTile}>
           <Lock aria-hidden="true" className="size-6" />

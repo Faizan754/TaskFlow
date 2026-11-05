@@ -5,6 +5,7 @@ import {
   alertDanger,
   authCard,
   authHeading,
+  authPage,
   btnBase,
   btnBrand,
   btnLg,
@@ -54,7 +55,7 @@ const AuthForm = ({
   };
 
   return (
-    <div className="flex flex-1 items-start justify-center px-4 pt-8 pb-16 max-md:pt-6 max-md:pb-10">
+    <div className={authPage}>
       <div className={authCard}>
         <h1 className={authHeading}>
           {title}
@@ -75,6 +76,7 @@ const AuthForm = ({
                 <User aria-hidden="true" className={inputIcon} />
                 <input
                   type="text"
+                  autoComplete="username"
                   id="username"
                   name="username"
                   value={username}
@@ -93,6 +95,7 @@ const AuthForm = ({
               <Mail aria-hidden="true" className={inputIcon} />
               <input
                 type="email"
+                autoComplete="email"
                 id="email"
                 name="email"
                 value={email}
@@ -122,6 +125,9 @@ const AuthForm = ({
               <input
                 id="password"
                 type="password"
+                autoComplete={
+                  showUsername ? "new-password" : "current-password"
+                }
                 name="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
