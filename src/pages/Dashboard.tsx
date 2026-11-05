@@ -20,6 +20,7 @@ import {
   btnDanger,
   btnGhostDanger,
   btnIconSm,
+  btnLg,
   btnMd,
   btnSecondary,
   skel,
@@ -109,8 +110,8 @@ const Dashboard = () => {
       <div className={pageBox}>
         <ErrorMessage
           content="Couldn't find your boards. Please try again."
-          linkText="HomePage"
-          link="homepage"
+          linkText="Back to home"
+          link=""
         />
       </div>
     );
@@ -120,23 +121,23 @@ const Dashboard = () => {
       <div className="flex flex-wrap items-end gap-4">
         <div className="mr-auto flex flex-col gap-1">
           <h1 className={pageTitle}>Your boards</h1>
-          <p className="text-sm text-muted">
-            {boards.length > 0
-              ? boards.length === 1
-                ? "1 board"
-                : `${boards.length} boards`
-              : "Nothing here yet"}
-          </p>
+          {boards.length > 0 && (
+            <p className="text-sm text-muted">
+              {boards.length === 1 ? "1 board" : `${boards.length} boards`}
+            </p>
+          )}
         </div>
 
-        <button
-          type="button"
-          onClick={() => setIsCreateOpen(true)}
-          className={`${btnBase} ${btnMd} ${btnBrand}`}
-        >
-          <Plus className="size-4" aria-hidden="true" />
-          Create board
-        </button>
+        {boards.length > 0 && (
+          <button
+            type="button"
+            onClick={() => setIsCreateOpen(true)}
+            className={`${btnBase} ${btnMd} ${btnBrand}`}
+          >
+            <Plus className="size-4" aria-hidden="true" />
+            Create board
+          </button>
+        )}
       </div>
 
       <Modal
@@ -228,6 +229,14 @@ const Dashboard = () => {
             A board holds one project. You'll get To Do, In Progress and Done
             columns to start — rename or add more anytime.
           </p>
+          <button
+            type="button"
+            onClick={() => setIsCreateOpen(true)}
+            className={`${btnBase} ${btnLg} ${btnBrand} mt-2`}
+          >
+            <Plus className="size-4" aria-hidden="true" />
+            Create board
+          </button>
         </div>
       ) : (
         <ul className={gridClass}>
