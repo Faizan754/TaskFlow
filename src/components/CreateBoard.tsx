@@ -17,9 +17,9 @@ const CreateBoard = ({ onBoardCreated, onCancel }: Props) => {
   return (
     <EntityForm
       label="Board name"
-      titlePlaceholder="e.g. Project Alpha"
-      submitLabel="Create"
-      submittingLabel="Creating..."
+      titlePlaceholder="e.g. Fitness plan"
+      submitLabel="Create board"
+      submittingLabel="Creating…"
       errorMessage="Couldn't create the board. Please try again."
       onCancel={onCancel}
       onSubmit={async ({ title }) => {

@@ -1,2 +1,94 @@
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  color-scheme: light;
+  --logo-doc:#0a1230; --logo-line:#e8ecf8;
+  --bg:#f4f6fb; --surface:#ffffff; --surface-raised:#ffffff; --surface-sunken:#eaeef7; --col-over:#e1eaff;
+  --border:#dbe1ee; --border-strong:#c3cbdd; --border-input:#7a85a1;
+  --text:#0a1230; --text-muted:#4a5578; --text-placeholder:#6b7594;
+  --primary:#1a6bff; --primary-hover:#0f56e0; --primary-active:#0b47bd; --on-primary:#ffffff; --primary-soft:#e6efff; --primary-text:#1553d6;
+  --danger:#d92038; --danger-hover:#b8162c; --on-danger:#ffffff; --danger-soft:#ffe8eb; --danger-text:#b0142a;
+  --success:#0b7d47; --success-soft:#ddf5e8; --focus:#1a6bff; --overlay:rgba(10,18,48,.45);
+  --sh-sm:0 1px 2px rgba(10,18,48,.06),0 1px 1px rgba(10,18,48,.04);
+  --sh-md:0 6px 16px -4px rgba(10,18,48,.10),0 2px 4px rgba(10,18,48,.05);
+  --sh-lg:0 28px 60px -16px rgba(10,18,48,.30),0 8px 20px -8px rgba(10,18,48,.12);
+  --sh-drag:0 22px 44px -10px rgba(26,107,255,.40),0 6px 14px rgba(10,18,48,.12);
+  --p-low-bg:#e3f6fb; --p-low-fg:#04667d; --p-med-bg:#fff3d6; --p-med-fg:#8a5300; --p-high-bg:#ffe3e6; --p-high-fg:#b0142a;
+  --l-gray-bg:#eceff5; --l-gray-fg:#3d4663; --l-red-bg:#ffe3e6; --l-red-fg:#b0142a; --l-orange-bg:#ffe8d6; --l-orange-fg:#9a3d00;
+  --l-yellow-bg:#fff5c2; --l-yellow-fg:#735c00; --l-green-bg:#dcf5e7; --l-green-fg:#0b6b3d; --l-blue-bg:#e0ebff; --l-blue-fg:#1550c8;
+  --l-purple-bg:#ece6ff; --l-purple-fg:#5a32d6; --l-pink-bg:#ffe0f0; --l-pink-fg:#a81a63;
+  --sw-gray:#8a93ab; --sw-red:#f03a4f; --sw-orange:#f2771a; --sw-yellow:#e6b800; --sw-green:#1fae68; --sw-blue:#1a6bff; --sw-purple:#7a52f4; --sw-pink:#e5489b;
+}
+.dark {
+  color-scheme: dark;
+  --logo-doc:#1d2a5c; --logo-line:#e8ecf8;
+  --bg:#070d24; --surface:#0e1636; --surface-raised:#16204a; --surface-sunken:#0a112b; --col-over:#10214f;
+  --border:#222d57; --border-strong:#34407a; --border-input:#6370a8;
+  --text:#eef2ff; --text-muted:#a6b0d4; --text-placeholder:#8390bb;
+  --primary:#5b9bff; --primary-hover:#7db0ff; --primary-active:#9cc3ff; --on-primary:#0a1230; --primary-soft:#142a5c; --primary-text:#8db8ff;
+  --danger:#ff4d5e; --danger-hover:#ff7381; --on-danger:#0a1230; --danger-soft:#3a0f1b; --danger-text:#ff9aa6;
+  --success:#3ddc97; --success-soft:#0d3a26; --focus:#19d3f5; --overlay:rgba(2,5,18,.72);
+  --sh-sm:0 1px 2px rgba(0,0,0,.45); --sh-md:0 8px 20px -6px rgba(0,0,0,.6);
+  --sh-lg:0 30px 70px -16px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.04);
+  --sh-drag:0 24px 50px -10px rgba(25,211,245,.25),0 8px 20px rgba(0,0,0,.6);
+  --p-low-bg:#0b3a47; --p-low-fg:#7fe3f7; --p-med-bg:#3d2c06; --p-med-fg:#ffd27a; --p-high-bg:#4a1220; --p-high-fg:#ff9aa6;
+  --l-gray-bg:#262f4d; --l-gray-fg:#c9d1e8; --l-red-bg:#4a1220; --l-red-fg:#ff9aa6; --l-orange-bg:#45230a; --l-orange-fg:#ffb37a;
+  --l-yellow-bg:#3d3205; --l-yellow-fg:#ffe27a; --l-green-bg:#0d3a26; --l-green-fg:#6fe3a6; --l-blue-bg:#10285c; --l-blue-fg:#93b8ff;
+  --l-purple-bg:#2a1d63; --l-purple-fg:#c3b2ff; --l-pink-bg:#4a1035; --l-pink-fg:#ff9cd0;
+  --sw-red:#ff5263; --sw-orange:#ff8a3d; --sw-yellow:#f5cc2a; --sw-green:#34c97f; --sw-blue:#5b9bff; --sw-purple:#9a7bff; --sw-pink:#f06aae;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-col-over: var(--col-over);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-fg: var(--text);
+  --color-muted: var(--text-muted);
+  --color-placeholder: var(--text-placeholder);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-active: var(--primary-active);
+  --color-on-primary: var(--on-primary);
+  --color-primary-soft: var(--primary-soft);
+  --color-primary-text: var(--primary-text);
+  --color-danger: var(--danger);
+  --color-danger-hover: var(--danger-hover);
+  --color-on-danger: var(--on-danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-danger-text: var(--danger-text);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-focus: var(--focus);
+  --color-overlay: var(--overlay);
+  --shadow-sm: var(--sh-sm);
+  --shadow-md: var(--sh-md);
+  --shadow-lg: var(--sh-lg);
+  --shadow-drag: var(--sh-drag);
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Sora", "Inter", ui-sans-serif, sans-serif;
+}
+
+body { @apply bg-bg text-fg font-sans antialiased; }
+
+/* Modal entrance animations (extra E1) */
+@keyframes tf-dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+}
+@keyframes tf-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes tf-shimmer {
+  0% { background-position: 100% 0 }
+  100% { background-position: -100% 0 }
+}

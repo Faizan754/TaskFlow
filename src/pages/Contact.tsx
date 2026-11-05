@@ -1,12 +1,31 @@
 import { useState, type SubmitEvent } from "react";
 import { Link } from "react-router";
+import {
+  ArrowRight,
+  CircleAlert,
+  CircleCheck,
+  LoaderCircle,
+  Mail,
+  MessageSquare,
+} from "lucide-react";
 import { sendContactMessage } from "../services/contactService";
+import {
+  alertDanger,
+  btnBase,
+  btnBrand,
+  btnGhost,
+  btnLg,
+  btnMd,
+  btnPrimary,
+  iconTile,
+  iconTileSuccess,
+  input,
+  label as labelClass,
+  textareaTall,
+} from "../lib/ui";
 
 const MAX_NAME = 100;
 const MAX_MESSAGE = 2000;
-
-const inputClasses =
-  "block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6";
 
 const Contact = () => {
   const [name, setName] = useState("");
@@ -59,90 +78,120 @@ const Contact = () => {
     }
   };
 
+  const intro = (
+    <div className="flex flex-col items-start gap-4">
+      <div className={iconTile}>
+        <MessageSquare className="size-6" aria-hidden="true" />
+      </div>
+      <h1 className="font-display text-[36px] leading-[44px] font-bold tracking-tight text-fg max-md:text-[28px] max-md:leading-9">
+        Get in touch
+      </h1>
+      <p className="max-w-[440px] text-lg leading-7 text-muted max-md:text-base">
+        Found a bug, have an idea, or need a hand with your boards? Send a
+        message and you'll get a reply by email.
+      </p>
+      <p className="flex items-center gap-2 text-sm text-muted">
+        <Mail className="size-4" aria-hidden="true" />
+        Replies go to the email you enter.
+      </p>
+    </div>
+  );
+
+  const pageGrid =
+    "mx-auto grid w-full max-w-[1240px] grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] items-start gap-14 px-10 py-[72px] max-md:grid-cols-1 max-md:gap-8 max-md:px-4 max-md:py-10";
+  const card =
+    "rounded-[20px] border border-border bg-surface p-8 shadow-md max-md:p-5";
+
   if (sent) {
     return (
-      <div className="mx-auto max-w-md px-6 py-20 text-center">
-        <h1 className="text-2xl font-bold tracking-tight text-white">
-          Message sent
-        </h1>
-        <p className="mt-4 text-sm text-gray-300">
-          Thanks for getting in touch. I'll read your message soon.
-        </p>
-        <div className="mt-8 flex justify-center gap-6 text-sm font-semibold">
-          <button
-            type="button"
-            onClick={reset}
-            className="text-indigo-400 hover:text-indigo-300"
-          >
-            Send another message
-          </button>
-          <Link to="/" className="text-indigo-400 hover:text-indigo-300">
-            Back to home
-          </Link>
+      <div className={pageGrid}>
+        {intro}
+        <div role="status" className={`${card} flex flex-col items-start gap-4`}>
+          <div className={iconTileSuccess}>
+            <CircleCheck className="size-6" aria-hidden="true" />
+          </div>
+          <h2 className="font-display text-2xl leading-8 font-semibold tracking-tight text-fg">
+            Thanks — your message is on its way
+          </h2>
+          <p className="text-[15px] leading-6 text-muted">
+            {email.trim() ? (
+              <>
+                A reply will go to{" "}
+                <b className="font-semibold text-fg">{email.trim()}</b>.
+              </>
+            ) : (
+              "We'll reply by email."
+            )}
+          </p>
+          <div className="flex gap-3 max-md:w-full max-md:flex-col">
+            <Link to="/" className={`${btnBase} ${btnMd} ${btnPrimary}`}>
+              Back to home
+            </Link>
+            <button
+              type="button"
+              onClick={reset}
+              className={`${btnBase} ${btnMd} ${btnGhost}`}
+            >
+              Send another message
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto max-w-md px-6 py-16">
-      <h1 className="text-center text-2xl font-bold tracking-tight text-white">
-        Contact
-      </h1>
-      <p className="mt-2 text-center text-sm text-gray-400">
-        Questions or feedback about TaskFlow? Send a message.
-      </p>
+    <div className={pageGrid}>
+      {intro}
+      <div className={card}>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-[18px]">
+          {error && (
+            <div role="alert" className={alertDanger}>
+              <CircleAlert
+                className="mt-0.5 size-4 shrink-0"
+                aria-hidden="true"
+              />
+              {error}
+            </div>
+          )}
 
-      <form onSubmit={handleSubmit} className="mt-10 space-y-6">
-        <div>
-          <label
-            htmlFor="name"
-            className="block text-sm/6 font-medium text-gray-100"
-          >
-            Name
-          </label>
-          <div className="mt-2">
-            <input
-              id="name"
-              name="name"
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              maxLength={MAX_NAME}
-              required
-              className={inputClasses}
-            />
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4">
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="name" className={labelClass}>
+                Name
+              </label>
+              <input
+                id="name"
+                name="name"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                maxLength={MAX_NAME}
+                required
+                className={input}
+              />
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="email" className={labelClass}>
+                Email
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className={input}
+              />
+            </div>
           </div>
-        </div>
 
-        <div>
-          <label
-            htmlFor="email"
-            className="block text-sm/6 font-medium text-gray-100"
-          >
-            Email address
-          </label>
-          <div className="mt-2">
-            <input
-              id="email"
-              name="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className={inputClasses}
-            />
-          </div>
-        </div>
-
-        <div>
-          <label
-            htmlFor="message"
-            className="block text-sm/6 font-medium text-gray-100"
-          >
-            Message
-          </label>
-          <div className="mt-2">
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="message" className={labelClass}>
+              Message
+            </label>
             <textarea
               id="message"
               name="message"
@@ -151,39 +200,44 @@ const Contact = () => {
               onChange={(e) => setMessage(e.target.value)}
               maxLength={MAX_MESSAGE}
               required
-              className={inputClasses}
+              className={textareaTall}
+            />
+            <p className="text-right text-xs text-muted">
+              {message.length}/{MAX_MESSAGE}
+            </p>
+          </div>
+
+          <div className="hidden" aria-hidden="true">
+            <label htmlFor="website">Website</label>
+            <input
+              id="website"
+              name="website"
+              type="text"
+              tabIndex={-1}
+              autoComplete="off"
+              value={honeypot}
+              onChange={(e) => setHoneypot(e.target.value)}
             />
           </div>
-          <p className="mt-1 text-right text-xs text-gray-500">
-            {message.length}/{MAX_MESSAGE}
-          </p>
-        </div>
 
-        <div className="hidden" aria-hidden="true">
-          <label htmlFor="website">Website</label>
-          <input
-            id="website"
-            name="website"
-            type="text"
-            tabIndex={-1}
-            autoComplete="off"
-            value={honeypot}
-            onChange={(e) => setHoneypot(e.target.value)}
-          />
-        </div>
-
-        {error && (
-          <div className="text-center text-sm text-red-500">{error}</div>
-        )}
-
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="flex w-full justify-center rounded-md bg-indigo-500 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 disabled:opacity-60"
-        >
-          {isLoading ? "Sending..." : "Send message"}
-        </button>
-      </form>
+          <button
+            type="submit"
+            disabled={isLoading}
+            className={`${btnBase} ${btnLg} ${btnBrand} self-start max-md:w-full`}
+          >
+            {isLoading ? (
+              <LoaderCircle
+                className="size-4 animate-spin motion-reduce:animate-none"
+                aria-hidden="true"
+              />
+            ) : null}
+            {isLoading ? "Sending…" : "Send message"}
+            {!isLoading && (
+              <ArrowRight className="size-4" aria-hidden="true" />
+            )}
+          </button>
+        </form>
+      </div>
     </div>
   );
 };

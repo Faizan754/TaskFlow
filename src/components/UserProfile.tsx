@@ -1,7 +1,24 @@
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { Link, useNavigate } from "react-router";
+import {
+  ChevronDown,
+  LayoutDashboard,
+  LogOut,
+  Menu as MenuIcon,
+  User,
+} from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../lib/supabaseClient";
+import {
+  brandGradient,
+  btnBase,
+  btnGhost,
+  btnIcon,
+  btnMd,
+  btnPrimary,
+  btnSecondary,
+  menuItem,
+} from "../lib/ui";
 import Loading from "./Loading";
 
 const UserProfile = () => {
@@ -16,64 +33,95 @@ const UserProfile = () => {
   const username = user?.user_metadata?.username;
 
   return (
-    <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-      <Menu as="div" className="relative ml-3">
-        <div className="flex flex-row gap-3 justify-between items-center">
-          <span className="text-base font-semibold text-gray-700">
-            {username ? username : "Unknown"}
-          </span>
-
-          <MenuButton className="relative flex rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 cursor-pointer">
-            <span className="absolute -inset-1.5" />
+    <div className="relative flex items-center gap-2">
+      {!loading && !user && (
+        <div className="hidden items-center gap-2 md:flex">
+          <Link to="/login" className={`${btnBase} ${btnMd} ${btnGhost}`}>
+            Log in
+          </Link>
+          <Link to="/signup" className={`${btnBase} ${btnMd} ${btnPrimary}`}>
+            Sign up
+          </Link>
+        </div>
+      )}
+      <Menu as="div" className={user ? "relative" : "relative md:hidden"}>
+        {user ? (
+          <MenuButton className="group inline-flex h-10 cursor-pointer items-center gap-2 rounded-full border border-border bg-surface pr-2.5 pl-1.5 text-sm font-semibold text-fg hover:bg-surface-sunken focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus data-open:bg-surface-sunken max-md:h-11">
             <span className="sr-only">Open user menu</span>
-
-            <img
-              alt=""
-              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-              className="size-8 rounded-full bg-gray-200 outline outline-1 -outline-offset-1 outline-gray-300 shadow-sm"
+            <span
+              aria-hidden="true"
+              className={`grid size-7 place-content-center rounded-full ${brandGradient} text-xs font-bold text-white`}
+            >
+              {(username?.[0] ?? "?").toUpperCase()}
+            </span>
+            <span className="max-w-40 truncate max-md:hidden">
+              {username ? username : "Unknown"}
+            </span>
+            <ChevronDown
+              className="size-4 text-muted transition-transform group-data-open:rotate-180 motion-reduce:transition-none"
+              aria-hidden="true"
             />
           </MenuButton>
-        </div>
+        ) : (
+          <MenuButton
+            className={`${btnBase} ${btnIcon} ${btnSecondary}`}
+          >
+            <span className="sr-only">Open user menu</span>
+            <MenuIcon size={20} aria-hidden="true" />
+          </MenuButton>
+        )}
         <MenuItems
           transition
-          className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md border border-gray-200 bg-white py-1 shadow-lg transition data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
+          className="absolute right-0 z-10 mt-2 w-60 origin-top-right rounded-xl border border-border bg-surface-raised p-1.5 shadow-lg transition data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in motion-reduce:transition-none"
         >
           {loading ? (
             <Loading />
           ) : !user ? (
             <div>
               <MenuItem>
-                <Link
-                  to="/login"
-                  className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-none"
-                >
-                  Login
+                <Link to="/login" className={menuItem}>
+                  <User className="size-4 text-muted" aria-hidden="true" />
+                  Log in
                 </Link>
               </MenuItem>
-              <MenuItem>
-                <Link
-                  to="/signup"
-                  className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-none"
-                >
-                  Sign up
-                </Link>
-              </MenuItem>
+              <div className="px-1 pt-1.5 pb-0.5">
+                <MenuItem>
+                  <Link
+                    to="/signup"
+                    className={`${btnBase} ${btnMd} ${btnPrimary} w-full`}
+                  >
+                    Sign up
+                  </Link>
+                </MenuItem>
+              </div>
             </div>
           ) : (
             <div>
+              <div className="mb-1 border-b border-border px-2.5 pt-2 pb-2.5">
+                <div className="truncate text-[13px] font-semibold text-fg">
+                  {username ? username : "Unknown"}
+                </div>
+                <div className="truncate text-xs text-muted">{user.email}</div>
+              </div>
               <MenuItem>
-                <Link
-                  to="/dashboard"
-                  className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-none"
-                >
+                <Link to="/dashboard" className={menuItem}>
+                  <LayoutDashboard
+                    className="size-4 text-muted"
+                    aria-hidden="true"
+                  />
                   Dashboard
                 </Link>
               </MenuItem>
+              <div className="mx-1.5 my-1 h-px bg-border" />
               <MenuItem>
                 <button
                   onClick={handleOnClick}
-                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 cursor-pointer data-focus:bg-gray-100 data-focus:outline-none"
+                  className={`${menuItem} text-danger-text`}
                 >
+                  <LogOut
+                    className="size-4 text-danger-text"
+                    aria-hidden="true"
+                  />
                   Sign out
                 </button>
               </MenuItem>

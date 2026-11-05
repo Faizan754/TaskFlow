@@ -23,6 +23,11 @@ const SortableCard = ({ card, labels, onClick }: Props) => {
   return (
     <li
       ref={setNodeRef}
+      className={
+        isDragging
+          ? "list-none rounded-xl cursor-grabbing outline-2 outline-dashed outline-primary"
+          : "list-none rounded-xl cursor-grab focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+      }
       style={{
         transform: CSS.Transform.toString(transform),
         transition,

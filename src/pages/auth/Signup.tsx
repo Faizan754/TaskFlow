@@ -32,12 +32,12 @@ const Signup = () => {
   return (
     <AuthForm
       onSubmit={handleSubmit}
-      title="Create a new account"
+      title="Create your account"
       error={error}
       isLoading={isLoading}
       buttonText="Sign up"
       linkTo="/login"
-      linkLabel="Login"
+      linkLabel="Log in"
       linkText="Already have an account?"
       showUsername={true}
     />

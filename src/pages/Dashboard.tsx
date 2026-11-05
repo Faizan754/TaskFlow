@@ -1,11 +1,39 @@
 import { useEffect, useState } from "react";
 import { getBoards, deleteBoard } from "../services/boardService";
 import { type Board } from "../entities/Boards";
-import Loading from "../components/Loading";
 import CreateBoard from "../components/CreateBoard";
 import { Link } from "react-router";
 import Modal from "../components/Modal";
 import ErrorMessage from "../components/ErrorMessage";
+import {
+  ArrowRight,
+  CircleAlert,
+  LoaderCircle,
+  Plus,
+  SquareKanban,
+  Trash2,
+} from "lucide-react";
+import {
+  alertDanger,
+  btnBase,
+  btnBrand,
+  btnDanger,
+  btnGhostDanger,
+  btnIconSm,
+  btnLg,
+  btnMd,
+  btnSecondary,
+  skel,
+} from "../lib/ui";
+
+const pageBox =
+  "mx-auto flex w-full max-w-[1240px] flex-col gap-7 px-10 pt-12 pb-16 max-md:px-4 max-md:pt-8";
+const pageTitle =
+  "font-display text-[36px] leading-[44px] font-bold tracking-tight text-fg max-md:text-[28px] max-md:leading-9";
+const gridClass =
+  "grid grid-cols-[repeat(auto-fill,minmax(270px,1fr))] gap-5 max-md:grid-cols-1 max-md:gap-3";
+const focusRing =
+  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";
 
 const Dashboard = () => {
   const [boards, setBoards] = useState<Board[]>([]);
@@ -43,41 +71,79 @@ const Dashboard = () => {
     getBoards()
       .then((res) => setBoards(res))
       .catch((err) => {
-        (console.log(err.message), setError(err));
+        console.log(err.message);
+        setError(err);
       })
       .finally(() => setLoading(false));
   }, []);
   if (loading) {
-    return <Loading />;
+    return (
+      <div className={pageBox} aria-busy="true">
+        <div className="flex flex-wrap items-end gap-4">
+          <div className="mr-auto flex flex-col gap-1">
+            <h1 className={pageTitle}>Your boards</h1>
+            <p className="text-sm text-muted">Loading…</p>
+          </div>
+        </div>
+        <div role="status">
+          <span className="sr-only">Loading boards</span>
+          <ul className={gridClass} aria-hidden="true">
+            {[0, 1, 2].map((n) => (
+              <li
+                key={n}
+                className="flex min-h-[176px] flex-col gap-4 rounded-2xl border border-border bg-surface p-5 shadow-sm"
+              >
+                <div className={`${skel} size-11 rounded-xl`} />
+                <div className="mt-auto flex flex-col gap-2">
+                  <div className={`${skel} h-5 w-3/4 rounded-lg`} />
+                  <div className={`${skel} h-3 w-1/3 rounded-lg`} />
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    );
   }
   if (error) {
     return (
-      <ErrorMessage
-        content="Couldn't find your boards. Please try again."
-        linkText="HomePage"
-        link="homepage"
-      />
+      <div className={pageBox}>
+        <ErrorMessage
+          content="Couldn't find your boards. Please try again."
+          linkText="Back to home"
+          link=""
+        />
+      </div>
     );
   }
   return (
-    <div className="mx-auto w-full max-w-5xl p-6">
-      <div className="mb-8 flex items-center justify-between gap-4">
-        <h1 className="text-2xl font-bold text-gray-800">
-          Your <span className="text-blue-600">Boards</span>
-        </h1>
+    <div className={pageBox}>
+      <div className="flex flex-wrap items-end gap-4">
+        <div className="mr-auto flex flex-col gap-1">
+          <h1 className={pageTitle}>Your boards</h1>
+          {boards.length > 0 && (
+            <p className="text-sm text-muted">
+              {boards.length === 1 ? "1 board" : `${boards.length} boards`}
+            </p>
+          )}
+        </div>
 
-        <button
-          onClick={() => setIsCreateOpen(true)}
-          className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700"
-        >
-          + Create board
-        </button>
+        {boards.length > 0 && (
+          <button
+            type="button"
+            onClick={() => setIsCreateOpen(true)}
+            className={`${btnBase} ${btnMd} ${btnBrand}`}
+          >
+            <Plus className="size-4" aria-hidden="true" />
+            Create board
+          </button>
+        )}
       </div>
 
       <Modal
         isOpen={isCreateOpen}
         onClose={() => setIsCreateOpen(false)}
-        title="Create a new board"
+        title="Create board"
       >
         <CreateBoard
           onBoardCreated={(newBoard) => {
@@ -90,25 +156,38 @@ const Dashboard = () => {
       <Modal
         isOpen={boardToDelete !== null}
         onClose={closeDeleteModal}
-        title="Delete board"
+        title="Delete board?"
       >
         {boardToDelete && (
-          <div className="space-y-4">
-            <p className="text-sm text-gray-700">
-              Delete{" "}
-              <span className="font-semibold">{boardToDelete.title}</span>? This
-              also deletes its columns, cards and subtasks, and it can't be
-              undone.
-            </p>
+          <div className="flex flex-col gap-5">
+            <div className="flex items-start gap-3">
+              <span className="grid size-10 shrink-0 place-content-center rounded-xl bg-danger-soft text-danger-text">
+                <Trash2 className="size-5" aria-hidden="true" />
+              </span>
+              <p className="text-sm text-muted">
+                Delete{" "}
+                <span className="font-semibold text-fg">
+                  {boardToDelete.title}
+                </span>
+                ? This also deletes its columns, cards and subtasks. You can't
+                undo this.
+              </p>
+            </div>
             {deleteError && (
-              <p className="text-sm text-red-600">{deleteError}</p>
+              <p role="alert" className={alertDanger}>
+                <CircleAlert
+                  className="mt-0.5 size-4 shrink-0"
+                  aria-hidden="true"
+                />
+                {deleteError}
+              </p>
             )}
-            <div className="flex justify-end gap-3">
+            <div className="flex justify-end gap-2">
               <button
                 type="button"
                 onClick={closeDeleteModal}
                 disabled={deleting}
-                className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50"
+                className={`${btnBase} ${btnMd} ${btnSecondary} max-md:flex-1`}
               >
                 Cancel
               </button>
@@ -116,9 +195,22 @@ const Dashboard = () => {
                 type="button"
                 onClick={handleDeleteBoard}
                 disabled={deleting}
-                className="rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-60"
+                className={`${btnBase} ${btnMd} ${btnDanger} max-md:flex-1`}
               >
-                {deleting ? "Deleting..." : "Delete"}
+                {deleting ? (
+                  <>
+                    <LoaderCircle
+                      className="size-4 animate-spin motion-reduce:animate-none"
+                      aria-hidden="true"
+                    />
+                    Deleting…
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="size-4" aria-hidden="true" />
+                    Delete board
+                  </>
+                )}
               </button>
             </div>
           </div>
@@ -126,37 +218,73 @@ const Dashboard = () => {
       </Modal>
 
       {boards.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-gray-300 bg-white p-12 text-center shadow-sm">
-          <p className="text-lg font-medium text-gray-600">
-            You don't have any boards yet.
+        <div className="flex flex-col items-center gap-3 rounded-[20px] border-2 border-dashed border-border-strong bg-surface px-6 py-[72px] text-center">
+          <span className="grid size-16 place-content-center rounded-[18px] bg-primary-soft text-primary-text">
+            <SquareKanban className="size-7" aria-hidden="true" />
+          </span>
+          <h2 className="font-display text-2xl leading-8 font-semibold tracking-tight text-fg">
+            Start your first board
+          </h2>
+          <p className="max-w-[400px] text-[15px] leading-6 text-muted">
+            A board holds one project. You'll get To Do, In Progress and Done
+            columns to start — rename or add more anytime.
           </p>
-          <p className="mt-1 text-sm text-gray-400">
-            Create your first board to get started.
-          </p>
+          <button
+            type="button"
+            onClick={() => setIsCreateOpen(true)}
+            className={`${btnBase} ${btnLg} ${btnBrand} mt-2`}
+          >
+            <Plus className="size-4" aria-hidden="true" />
+            Create board
+          </button>
         </div>
       ) : (
-        <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className={gridClass}>
           {boards.map((board) => (
-            <li key={board.id} className="relative">
+            <li
+              key={board.id}
+              className="group relative transition-transform duration-200 hover:-translate-y-0.5 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+            >
               <Link
                 to={`/board/${board.id}`}
-                className="block rounded-lg border border-gray-200 bg-white p-4 pr-12 shadow-sm transition-shadow hover:shadow-md"
+                className={`flex min-h-[176px] flex-col gap-4 rounded-2xl border border-border bg-surface p-5 pr-14 text-fg shadow-sm transition-[box-shadow,border-color] duration-200 group-hover:border-border-strong group-hover:shadow-md motion-reduce:transition-none ${focusRing}`}
               >
-                <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-700">
-                  {board.title}
-                </h2>
-                <p className="mt-2 text-xs text-blue-600">Open board →</p>
+                <span className="grid size-11 place-content-center rounded-xl bg-primary-soft text-primary-text">
+                  <SquareKanban className="size-5" aria-hidden="true" />
+                </span>
+                <div className="mt-auto flex flex-col gap-1">
+                  <h2 className="font-display text-[17px] leading-6 font-semibold tracking-tight break-words text-fg">
+                    {board.title}
+                  </h2>
+                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-primary-text">
+                    Open board
+                    <ArrowRight
+                      className="size-3.5 transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0"
+                      aria-hidden="true"
+                    />
+                  </span>
+                </div>
               </Link>
               <button
                 type="button"
                 onClick={() => setBoardToDelete(board)}
                 aria-label={`Delete board ${board.title}`}
-                className="absolute right-3 top-3 rounded px-2 py-1 text-lg leading-none text-gray-400 hover:bg-red-50 hover:text-red-600"
+                className={`absolute top-3 right-3 ${btnBase} ${btnIconSm} ${btnGhostDanger}`}
               >
-                ×
+                <Trash2 className="size-4" aria-hidden="true" />
               </button>
             </li>
           ))}
+          <li>
+            <button
+              type="button"
+              onClick={() => setIsCreateOpen(true)}
+              className={`flex min-h-[176px] w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-border-strong text-sm font-semibold text-muted transition-colors hover:border-primary hover:bg-primary/5 hover:text-primary-text motion-reduce:transition-none ${focusRing}`}
+            >
+              <Plus className="size-5" aria-hidden="true" />
+              New board
+            </button>
+          </li>
         </ul>
       )}
     </div>

@@ -1,4 +1,5 @@
 import { useState, type SubmitEvent } from "react";
+import { Check, CircleAlert, LoaderCircle, Plus, Trash2 } from "lucide-react";
 import type { Label } from "../entities/Labels";
 import {
   LABEL_COLORS,
@@ -7,6 +8,18 @@ import {
 } from "../lib/labelColors";
 import { createLabel, deleteLabel } from "../services/labelService";
 import LabelChip from "./LabelChip";
+import {
+  btnBase,
+  btnDanger,
+  btnGhostDanger,
+  btnIconSm,
+  btnMd,
+  btnPrimary,
+  btnSecondary,
+  btnSm,
+  fieldError,
+  input,
+} from "../lib/ui";
 
 interface Props {
   boardId: string;
@@ -14,6 +27,11 @@ interface Props {
   onCreated: (label: Label) => void;
   onDeleted: (labelId: string) => void;
 }
+
+const swatchBase =
+  "relative grid size-9 cursor-pointer place-content-center rounded-full max-md:size-11 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";
+const swatchSelected =
+  "ring-2 ring-fg ring-offset-2 ring-offset-surface-sunken";
 
 const LabelManager = ({ boardId, labels, onCreated, onDeleted }: Props) => {
   const [name, setName] = useState("");
@@ -59,47 +77,55 @@ const LabelManager = ({ boardId, labels, onCreated, onDeleted }: Props) => {
   };
 
   return (
-    <div className="space-y-5">
+    <div className="flex flex-col gap-5">
       {labels.length === 0 ? (
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-muted">
           No labels yet. Create the first one below.
         </p>
       ) : (
-        <ul className="space-y-2">
+        <ul className="flex flex-col gap-1" aria-label="Board labels">
           {labels.map((label) => (
             <li
               key={label.id}
-              className="flex items-center justify-between gap-3"
+              className="flex min-h-11 items-center gap-3 rounded-[10px] px-2 hover:bg-surface-sunken"
             >
               <LabelChip label={label} />
               {confirmingId === label.id ? (
-                <div className="flex items-center gap-2 text-xs">
-                  <span className="text-gray-600">Remove from all cards?</span>
-                  <button
-                    type="button"
-                    onClick={() => handleDelete(label.id)}
-                    disabled={busyId !== null}
-                    className="font-semibold text-red-600 disabled:opacity-60"
-                  >
-                    {busyId === label.id ? "Deleting..." : "Delete"}
-                  </button>
+                <div className="ml-auto flex flex-wrap items-center gap-2 rounded-xl bg-danger-soft py-1.5 pr-1.5 pl-3">
+                  <span className="text-[13px] text-fg">
+                    Remove from all cards?
+                  </span>
                   <button
                     type="button"
                     onClick={() => setConfirmingId(null)}
                     disabled={busyId !== null}
-                    className="text-gray-500 hover:text-gray-700"
+                    className={`${btnBase} ${btnSm} ${btnSecondary}`}
                   >
                     Keep
                   </button>
+                  <button
+                    type="button"
+                    onClick={() => handleDelete(label.id)}
+                    disabled={busyId !== null}
+                    className={`${btnBase} ${btnSm} ${btnDanger}`}
+                  >
+                    {busyId === label.id ? "Deleting…" : "Delete"}
+                  </button>
                 </div>
               ) : (
-                <button
-                  type="button"
-                  onClick={() => setConfirmingId(label.id)}
-                  className="text-xs text-gray-400 hover:text-red-600"
-                >
-                  Delete
-                </button>
+                <>
+                  <span className="ml-auto text-xs text-muted capitalize">
+                    {label.color}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setConfirmingId(label.id)}
+                    aria-label={`Delete label ${label.name}`}
+                    className={`${btnBase} ${btnIconSm} ${btnGhostDanger}`}
+                  >
+                    <Trash2 className="size-4" aria-hidden="true" />
+                  </button>
+                </>
               )}
             </li>
           ))}
@@ -108,18 +134,20 @@ const LabelManager = ({ boardId, labels, onCreated, onDeleted }: Props) => {
 
       <form
         onSubmit={handleCreate}
-        className="space-y-3 border-t border-gray-200 pt-4"
+        className="flex flex-col gap-3.5 rounded-2xl border border-border bg-surface-sunken p-4"
       >
+        <span className="text-[13px] font-semibold text-fg">New label</span>
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Label name"
           maxLength={30}
           aria-label="Label name"
-          className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400"
+          data-autofocus
+          className={input}
         />
         <div
-          className="flex flex-wrap gap-2"
+          className="flex flex-wrap gap-2.5"
           role="radiogroup"
           aria-label="Label color"
         >
@@ -130,23 +158,53 @@ const LabelManager = ({ boardId, labels, onCreated, onDeleted }: Props) => {
               role="radio"
               aria-checked={color === option}
               aria-label={option}
+              title={option}
               onClick={() => setColor(option)}
-              className={`h-6 w-6 rounded-full ${labelColorClasses[option].swatch} ${
-                color === option ? "ring-2 ring-gray-800 ring-offset-2" : ""
-              }`}
-            />
+              className={
+                color === option
+                  ? `${swatchBase} ${labelColorClasses[option].swatch} ${swatchSelected}`
+                  : `${swatchBase} ${labelColorClasses[option].swatch}`
+              }
+            >
+              {color === option && (
+                <Check className="size-4 text-white" aria-hidden="true" />
+              )}
+            </button>
           ))}
         </div>
-        {error && <p className="text-sm text-red-600">{error}</p>}
-        <div className="flex justify-end">
+        <div className="flex flex-wrap items-center gap-2.5">
+          <span className="text-xs text-muted">Preview</span>
+          <span
+            className={`inline-flex h-7 max-w-full items-center gap-2 rounded-md px-2.5 text-[13px] leading-none font-semibold ${labelColorClasses[color].chip}`}
+          >
+            <span
+              aria-hidden="true"
+              className="size-[7px] shrink-0 rounded-[2px] bg-current"
+            />
+            <span className="truncate">{name.trim() || "Label name"}</span>
+          </span>
           <button
             type="submit"
             disabled={saving || !name.trim()}
-            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
+            className={`${btnBase} ${btnMd} ${btnPrimary} ml-auto`}
           >
-            {saving ? "Creating..." : "Add label"}
+            {saving ? (
+              <LoaderCircle
+                className="size-4 animate-spin motion-reduce:animate-none"
+                aria-hidden="true"
+              />
+            ) : (
+              <Plus className="size-4" aria-hidden="true" />
+            )}
+            {saving ? "Adding…" : "Add label"}
           </button>
         </div>
+        {error && (
+          <p className={fieldError}>
+            <CircleAlert className="size-4 shrink-0" aria-hidden="true" />
+            {error}
+          </p>
+        )}
       </form>
     </div>
   );

@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { Plus } from "lucide-react";
 import { createCard } from "../services/cardService";
 import type { Card } from "../entities/Cards";
 import EntityForm from "./EntityForm";
+import { addCardBtn } from "../lib/ui";
 
 interface Props {
   columnId: string;
@@ -17,20 +19,21 @@ const AddCard = ({ columnId, position, onCardCreated }: Props) => {
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="mt-3 w-full rounded-md px-3 py-2 text-left text-sm text-gray-500 hover:bg-gray-100"
+        className={addCardBtn}
       >
-        + Add card
+        <Plus aria-hidden="true" className="size-4" />
+        Add card
       </button>
     );
   }
 
   return (
-    <div className="mt-3">
+    <div className="rounded-xl border border-border bg-surface-raised p-2.5">
       <EntityForm
         titlePlaceholder="Card title"
-        submitLabel="Add"
+        submitLabel="Add card"
         showDescription
-        submittingLabel="Adding..."
+        submittingLabel="Adding…"
         errorMessage="Couldn't add the card. Please try again."
         onCancel={() => setIsOpen(false)}
         onSubmit={async ({ title, description }) => {

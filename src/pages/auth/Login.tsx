@@ -32,12 +32,12 @@ const Login = () => {
   return (
     <AuthForm
       onSubmit={handleSubmit}
-      title="Login to your account"
+      title="Welcome back"
       error={error}
       isLoading={isLoading}
-      buttonText="Login"
-      linkText="Dont have an account yet?"
-      linkLabel="Sign up"
+      buttonText="Log in"
+      linkText="New to TaskFlow?"
+      linkLabel="Create an account"
       linkTo="/signup"
       showUsername={false}
       forgotPasswordTo="/forgot-password"
