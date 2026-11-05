@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import {
   alertDanger,
+  brandGradient,
   btnBase,
   btnBrand,
   btnGhost,
@@ -273,7 +274,7 @@ const SubtaskList = ({ cardId, cardTitle, cardDescription }: Props) => {
         <div className="flex flex-wrap items-center gap-2.5">
           <span
             aria-hidden="true"
-            className="grid size-8 place-content-center rounded-[10px] bg-linear-135 from-[#1a6bff] to-[#4b2ae8] text-white"
+            className={`grid size-8 place-content-center rounded-[10px] ${brandGradient} text-white`}
           >
             <Sparkles className="size-4" />
           </span>

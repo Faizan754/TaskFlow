@@ -7,6 +7,12 @@ type ModalProps = {
   onClose: () => void;
   title?: string;
   children: ReactNode;
+  size?: "md" | "lg";
+};
+
+const panelClasses: Record<"md" | "lg", string> = {
+  md: "relative flex max-h-full w-full max-w-[560px] animate-[tf-dialog-in_160ms_ease-out] flex-col overflow-y-auto rounded-[20px] border border-border bg-surface text-fg shadow-lg motion-reduce:animate-none max-md:max-w-none max-md:rounded-b-none max-md:border-b-0",
+  lg: "relative flex max-h-full w-full max-w-[820px] animate-[tf-dialog-in_160ms_ease-out] flex-col overflow-y-auto rounded-[20px] border border-border bg-surface text-fg shadow-lg motion-reduce:animate-none max-md:max-w-none max-md:rounded-b-none max-md:border-b-0",
 };
 
 export default function Modal({
@@ -14,6 +20,7 @@ export default function Modal({
   onClose,
   title,
   children,
+  size = "md",
 }: ModalProps) {
   useEffect(() => {
     if (!isOpen) return;
@@ -42,10 +49,7 @@ export default function Modal({
       role="dialog"
       aria-modal="true"
     >
-      <div
-        className="relative flex max-h-full w-full max-w-[560px] animate-[tf-dialog-in_160ms_ease-out] flex-col overflow-y-auto rounded-[20px] border border-border bg-surface text-fg shadow-lg motion-reduce:animate-none max-md:max-w-none max-md:rounded-b-none max-md:border-b-0"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className={panelClasses[size]} onClick={(e) => e.stopPropagation()}>
         <div
           aria-hidden="true"
           className="mx-auto mt-2 h-1 w-10 rounded-full bg-border-strong md:hidden"

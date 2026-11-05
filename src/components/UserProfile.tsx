@@ -10,6 +10,7 @@ import {
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../lib/supabaseClient";
 import {
+  brandGradient,
   btnBase,
   btnGhost,
   btnIcon,
@@ -49,11 +50,11 @@ const UserProfile = () => {
             <span className="sr-only">Open user menu</span>
             <span
               aria-hidden="true"
-              className="grid size-7 place-content-center rounded-full bg-linear-135 from-[#1a6bff] to-[#4b2ae8] text-xs font-bold text-white"
+              className={`grid size-7 place-content-center rounded-full ${brandGradient} text-xs font-bold text-white`}
             >
               {(username?.[0] ?? "?").toUpperCase()}
             </span>
-            <span className="max-md:hidden">
+            <span className="max-w-40 truncate max-md:hidden">
               {username ? username : "Unknown"}
             </span>
             <ChevronDown
@@ -97,10 +98,10 @@ const UserProfile = () => {
           ) : (
             <div>
               <div className="mb-1 border-b border-border px-2.5 pt-2 pb-2.5">
-                <div className="text-[13px] font-semibold text-fg">
+                <div className="truncate text-[13px] font-semibold text-fg">
                   {username ? username : "Unknown"}
                 </div>
-                <div className="text-xs text-muted">{user.email}</div>
+                <div className="truncate text-xs text-muted">{user.email}</div>
               </div>
               <MenuItem>
                 <Link to="/dashboard" className={menuItem}>

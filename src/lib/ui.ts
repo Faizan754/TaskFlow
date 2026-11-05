@@ -1,4 +1,6 @@
-// Shared presentational class strings (complete literals, no interpolation).
+// Shared presentational class strings. Every class name is written out in
+// full so Tailwind can find it; constants may be joined with template literals
+// (e.g. btnBrand reuses brandGradient), but never build class names from parts.
 // Button composition: btnBase has NO sizing/radius/gap/text-size utilities.
 // Combine btnBase + exactly one size (btnMd | btnSm | btnLg | btnIcon |
 // btnIconSm) + one variant, so no final className contains conflicting
@@ -21,8 +23,8 @@ export const btnGhost =
   "text-muted hover:bg-surface-sunken hover:text-fg active:bg-border";
 export const btnDanger = "bg-danger text-on-danger hover:bg-danger-hover";
 export const btnGhostDanger = "text-danger-text hover:bg-danger-soft";
-export const btnBrand =
-  "bg-linear-135 from-[#1a6bff] to-[#4b2ae8] text-white shadow-[0_8px_20px_-8px_rgba(26,107,255,.7)] hover:from-[#0f56e0] hover:to-[#3a1fd0]";
+export const brandGradient = "bg-linear-135 from-[#1a6bff] to-[#4b2ae8]";
+export const btnBrand = `${brandGradient} text-white shadow-[0_8px_20px_-8px_rgba(26,107,255,.7)] hover:from-[#0f56e0] hover:to-[#3a1fd0]`;
 
 export const label = "block text-[13px] leading-[18px] font-semibold text-fg";
 export const hint = "text-xs text-muted";

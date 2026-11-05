@@ -35,7 +35,7 @@ const EntityForm = ({
   label,
   titlePlaceholder,
   submitLabel,
-  submittingLabel = "Saving...",
+  submittingLabel = "Saving…",
   showDescription = false,
   errorMessage = "Something went wrong. Please try again.",
   initialTitle = "",
