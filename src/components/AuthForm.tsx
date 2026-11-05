@@ -9,7 +9,6 @@ import {
   btnBase,
   btnBrand,
   btnLg,
-  btnPrimary,
   inputIcon,
   inputWithIcon,
   label,
@@ -140,11 +139,7 @@ const AuthForm = ({
           <button
             type="submit"
             disabled={isLoading}
-            className={
-              showUsername
-                ? `${btnBase} ${btnLg} ${btnBrand} w-full`
-                : `${btnBase} ${btnLg} ${btnPrimary} w-full`
-            }
+            className={`${btnBase} ${btnLg} ${btnBrand} w-full`}
           >
             {isLoading ? (
               <>

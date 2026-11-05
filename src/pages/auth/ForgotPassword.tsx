@@ -16,10 +16,10 @@ import {
   authHeading,
   authPage,
   btnBase,
+  btnBrand,
   btnGhost,
   btnLg,
   btnMd,
-  btnPrimary,
   btnSecondary,
   iconTile,
   iconTileSuccess,
@@ -134,7 +134,7 @@ const ForgotPassword = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className={`${btnBase} ${btnLg} ${btnPrimary} w-full`}
+            className={`${btnBase} ${btnLg} ${btnBrand} w-full`}
           >
             {isLoading ? (
               <>
