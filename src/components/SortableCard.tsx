@@ -2,13 +2,15 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import type { Card } from "../entities/Cards";
 import CardItem from "./CardItem";
+import type { Label } from "../entities/Labels";
 
 interface Props {
   card: Card;
+  labels?: Label[];
   onClick: () => void;
 }
 
-const SortableCard = ({ card, onClick }: Props) => {
+const SortableCard = ({ card, labels, onClick }: Props) => {
   const {
     attributes,
     listeners,
@@ -29,7 +31,7 @@ const SortableCard = ({ card, onClick }: Props) => {
       {...attributes}
       {...listeners}
     >
-      <CardItem card={card} onClick={onClick} />
+      <CardItem card={card} labels={labels} onClick={onClick} />
     </li>
   );
 };

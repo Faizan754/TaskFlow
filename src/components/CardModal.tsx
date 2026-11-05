@@ -5,9 +5,15 @@ import PrioritySelect from "./PrioritySelect";
 import SubtaskList from "./SubtaskList";
 import { updateCard, deleteCard } from "../services/cardService";
 import type { Card, Priority } from "../entities/Cards";
+import LabelPicker from "./LabelPicker";
+import type { CardLabel, Label } from "../entities/Labels";
 
 interface Props {
   card: Card | null;
+  labels: Label[];
+  assignedLabelIds: string[];
+  onLabelAdded: (cardLabel: CardLabel) => void;
+  onLabelRemoved: (cardId: string, labelId: string) => void;
   onClose: () => void;
   onUpdated: (card: Card) => void;
   onDeleted: (cardId: string) => void;
@@ -15,6 +21,10 @@ interface Props {
 
 const CardModalContent = ({
   card,
+  labels,
+  assignedLabelIds,
+  onLabelAdded,
+  onLabelRemoved,
   onClose,
   onUpdated,
   onDeleted,
@@ -69,6 +79,13 @@ const CardModalContent = ({
         cardTitle={card.title}
         cardDescription={card.description}
       />
+      <LabelPicker
+        cardId={card.id}
+        labels={labels}
+        assignedLabelIds={assignedLabelIds}
+        onAdded={onLabelAdded}
+        onRemoved={onLabelRemoved}
+      />
 
       <div className="border-t border-gray-200 pt-4">
         {confirming ? (
@@ -110,12 +127,25 @@ const CardModalContent = ({
   );
 };
 
-const CardModal = ({ card, onClose, onUpdated, onDeleted }: Props) => (
+const CardModal = ({
+  card,
+  onClose,
+  onUpdated,
+  onDeleted,
+  labels,
+  assignedLabelIds,
+  onLabelAdded,
+  onLabelRemoved,
+}: Props) => (
   <Modal isOpen={card !== null} onClose={onClose} title="Edit card">
     {card && (
       <CardModalContent
         key={card.id}
         card={card}
+        labels={labels}
+        assignedLabelIds={assignedLabelIds}
+        onLabelAdded={onLabelAdded}
+        onLabelRemoved={onLabelRemoved}
         onClose={onClose}
         onUpdated={onUpdated}
         onDeleted={onDeleted}

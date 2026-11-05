@@ -9,10 +9,12 @@ import type { Column } from "../entities/Columns";
 import { deleteColumn, renameColumn } from "../services/columnService";
 import SortableCard from "./SortableCard";
 import AddCard from "./AddCard";
+import type { Label } from "../entities/Labels";
 
 interface Props {
   column: Column;
   cards: Card[];
+  labelsForCard: (cardId: string) => Label[];
   onCardClick: (card: Card) => void;
   onCardCreated: (card: Card) => void;
   onRenamed: (column: Column) => void;
@@ -22,6 +24,7 @@ interface Props {
 const BoardColumn = ({
   column,
   cards,
+  labelsForCard,
   onCardClick,
   onCardCreated,
   onRenamed,
@@ -195,6 +198,7 @@ const BoardColumn = ({
             <SortableCard
               key={card.id}
               card={card}
+              labels={labelsForCard(card.id)}
               onClick={() => onCardClick(card)}
             />
           ))}

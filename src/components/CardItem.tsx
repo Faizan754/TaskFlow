@@ -1,12 +1,15 @@
 import type { Card } from "../entities/Cards";
+import type { Label } from "../entities/Labels";
 import PriorityBadge from "./PriorityBadge";
+import LabelChip from "./LabelChip";
 
 interface Props {
   card: Card;
+  labels?: Label[];
   onClick?: () => void;
 }
 
-const CardItem = ({ card, onClick }: Props) => (
+const CardItem = ({ card, labels, onClick }: Props) => (
   <button
     type="button"
     onClick={onClick}
@@ -18,6 +21,13 @@ const CardItem = ({ card, onClick }: Props) => (
     </div>
     {card.description && (
       <p className="mt-1 text-xs text-gray-500">{card.description}</p>
+    )}
+    {labels && labels.length > 0 && (
+      <div className="mt-2 flex flex-wrap gap-1">
+        {labels.map((label) => (
+          <LabelChip key={label.id} label={label} />
+        ))}
+      </div>
     )}
   </button>
 );

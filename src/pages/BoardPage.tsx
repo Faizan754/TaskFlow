@@ -26,6 +26,10 @@ import BoardColumn from "../components/BoardColumn";
 import CardItem from "../components/CardItem";
 import CardModal from "../components/CardModal";
 import AddColumn from "../components/AddColumn";
+import { getLabels, getCardLabels } from "../services/labelService";
+import type { Label, CardLabel } from "../entities/Labels";
+import LabelManager from "../components/LabelManager";
+import Modal from "../components/Modal";
 
 function withNormalizedPositions(cards: Card[]): Card[] {
   const counters = new Map<string, number>();
@@ -53,6 +57,9 @@ const BoardPage = () => {
   const [activeCard, setActiveCard] = useState<Card | null>(null);
   const [moveError, setMoveError] = useState<string | null>(null);
   const dragSnapshot = useRef<Card[] | null>(null);
+  const [labels, setLabels] = useState<Label[]>([]);
+  const [cardLabels, setCardLabels] = useState<CardLabel[]>([]);
+  const [isLabelsOpen, setIsLabelsOpen] = useState(false);
 
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 6 } }),
@@ -68,16 +75,20 @@ const BoardPage = () => {
     async function load() {
       try {
         // the route guarantees boardId exists since you cant access board page without a boardId.
-        const [boardResult, columnResult] = await Promise.all([
+        const [boardResult, columnResult, labelResult] = await Promise.all([
           getBoard(boardId!),
           getColumns(boardId!),
+          getLabels(boardId!),
         ]);
         setBoard(boardResult);
         setColumns(columnResult);
-        const cardResult = await getCards(
-          columnResult.map((column) => column.id),
-        );
+        setLabels(labelResult);
+        const [cardResult, cardLabelResult] = await Promise.all([
+          getCards(columnResult.map((column) => column.id)),
+          getCardLabels(labelResult.map((label) => label.id)),
+        ]);
         setCards(cardResult);
+        setCardLabels(cardLabelResult);
       } catch (err) {
         if (err instanceof Error) {
           console.error(err.message);
@@ -92,6 +103,15 @@ const BoardPage = () => {
     }
     load();
   }, [boardId]);
+
+  const labelsForCard = (cardId: string): Label[] => {
+    const ids = new Set(
+      cardLabels
+        .filter((item) => item.card_id === cardId)
+        .map((item) => item.label_id),
+    );
+    return labels.filter((label) => ids.has(label.id));
+  };
 
   const handleDragStart = ({ active }: DragStartEvent) => {
     setMoveError(null);
@@ -216,9 +236,18 @@ const BoardPage = () => {
   }
   return (
     <div className="mx-auto w-full max-w-5xl p-6">
-      <h1 className="mb-8 text-2xl font-bold text-gray-800">
-        Board: <span className="text-blue-600">{board.title}</span>
-      </h1>
+      <div className="mb-8 flex items-center justify-between gap-4">
+        <h1 className="text-2xl font-bold text-gray-800">
+          Board: <span className="text-blue-600">{board.title}</span>
+        </h1>
+        <button
+          type="button"
+          onClick={() => setIsLabelsOpen(true)}
+          className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-semibold text-gray-700 hover:bg-gray-50"
+        >
+          Manage labels
+        </button>
+      </div>
 
       {moveError && (
         <p className="mb-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
@@ -240,6 +269,7 @@ const BoardPage = () => {
               key={column.id}
               column={column}
               cards={cards.filter((card) => card.column_id === column.id)}
+              labelsForCard={labelsForCard}
               onCardClick={setSelectedCard}
               onCardCreated={(card) => setCards((prev) => [...prev, card])}
               onRenamed={(updated) =>
@@ -271,14 +301,51 @@ const BoardPage = () => {
         <DragOverlay>
           {activeCard ? (
             <div className="rotate-2 cursor-grabbing shadow-lg">
-              <CardItem card={activeCard} />
+              <CardItem
+                card={activeCard}
+                labels={labelsForCard(activeCard.id)}
+              />
             </div>
           ) : null}
         </DragOverlay>
       </DndContext>
 
+      <Modal
+        isOpen={isLabelsOpen}
+        onClose={() => setIsLabelsOpen(false)}
+        title="Manage labels"
+      >
+        <LabelManager
+          boardId={board.id}
+          labels={labels}
+          onCreated={(label) => setLabels((prev) => [...prev, label])}
+          onDeleted={(id) => {
+            setLabels((prev) => prev.filter((label) => label.id !== id));
+            setCardLabels((prev) =>
+              prev.filter((item) => item.label_id !== id),
+            );
+          }}
+        />
+      </Modal>
+
       <CardModal
         card={selectedCard}
+        labels={labels}
+        assignedLabelIds={
+          selectedCard
+            ? cardLabels
+                .filter((item) => item.card_id === selectedCard.id)
+                .map((item) => item.label_id)
+            : []
+        }
+        onLabelAdded={(item) => setCardLabels((prev) => [...prev, item])}
+        onLabelRemoved={(cardId, labelId) =>
+          setCardLabels((prev) =>
+            prev.filter(
+              (item) => !(item.card_id === cardId && item.label_id === labelId),
+            ),
+          )
+        }
         onClose={() => setSelectedCard(null)}
         onUpdated={(updated) =>
           setCards((prev) =>
