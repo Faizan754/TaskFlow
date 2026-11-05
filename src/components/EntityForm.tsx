@@ -1,4 +1,15 @@
 import { useId, useState, type ReactNode, type SubmitEvent } from "react";
+import { CircleAlert, LoaderCircle } from "lucide-react";
+import {
+  btnBase,
+  btnMd,
+  btnPrimary,
+  btnSecondary,
+  fieldError,
+  input,
+  label as labelClass,
+  textarea,
+} from "../lib/ui";
 
 export interface EntityFormValues {
   title: string;
@@ -19,9 +30,6 @@ interface Props {
   onSubmit: (values: EntityFormValues) => Promise<void>;
   onCancel?: () => void;
 }
-
-const inputClasses =
-  "block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500";
 
 const EntityForm = ({
   label,
@@ -68,29 +76,27 @@ const EntityForm = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="space-y-2">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <div className="flex flex-col gap-2">
         {label && (
-          <label
-            htmlFor={titleId}
-            className="mb-1 block text-sm font-medium text-gray-700"
-          >
+          <label htmlFor={titleId} className={labelClass}>
             {label}
           </label>
         )}
         <input
           id={titleId}
-          className={inputClasses}
+          className={input}
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder={titlePlaceholder}
           autoFocus
           required
+          aria-describedby={error ? `${titleId}-error` : undefined}
         />
         {showDescription && (
           <textarea
-            className={inputClasses}
+            className={textarea}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Description (optional)"
@@ -98,15 +104,20 @@ const EntityForm = ({
           />
         )}
         {extraFields}
-        {error && <p className="text-sm text-red-600">{error}</p>}
+        {error && (
+          <p id={`${titleId}-error`} className={fieldError}>
+            <CircleAlert className="size-4 shrink-0" aria-hidden="true" />
+            {error}
+          </p>
+        )}
       </div>
 
-      <div className="flex justify-end gap-3">
+      <div className="flex justify-end gap-2">
         {onCancel && (
           <button
             type="button"
             onClick={onCancel}
-            className="cursor-pointer rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm transition-colors hover:bg-gray-50"
+            className={`${btnBase} ${btnMd} ${btnSecondary} max-md:flex-1`}
           >
             Cancel
           </button>
@@ -114,8 +125,14 @@ const EntityForm = ({
         <button
           type="submit"
           disabled={isSubmitting || !title.trim()}
-          className="cursor-pointer rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
+          className={`${btnBase} ${btnMd} ${btnPrimary} max-md:flex-1`}
         >
+          {isSubmitting && (
+            <LoaderCircle
+              className="size-4 animate-spin motion-reduce:animate-none"
+              aria-hidden="true"
+            />
+          )}
           {isSubmitting ? submittingLabel : submitLabel}
         </button>
       </div>

@@ -1,11 +1,16 @@
+import { LoaderCircle } from "lucide-react";
+
 const Loading = () => {
   return (
-    <div className="flex flex-1 flex-col items-center justify-center">
-      <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-200 border-t-blue-600"></div>
-
-      <p className="mt-4 text-sm font-medium text-gray-500 animate-pulse">
-        Loading...
-      </p>
+    <div
+      className="flex flex-1 flex-col items-center justify-center"
+      role="status"
+    >
+      <LoaderCircle
+        className="size-8 animate-spin text-primary motion-reduce:animate-none"
+        aria-hidden="true"
+      />
+      <p className="mt-3 text-sm font-medium text-muted">Loading…</p>
     </div>
   );
 };

@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { Moon, Sun } from "lucide-react";
+import { btnBase, btnGhost, btnIcon } from "../lib/ui";
 
 type Theme = "light" | "dark";
 
@@ -33,9 +35,14 @@ const ThemeToggle = () => {
       type="button"
       onClick={() => setTheme(next)}
       aria-label={`Switch to ${next} mode`}
-      className="rounded-md px-2 py-1 text-sm font-semibold text-gray-300 hover:text-white"
+      title={`Switch to ${next} mode`}
+      className={`${btnBase} ${btnIcon} ${btnGhost}`}
     >
-      {theme === "dark" ? "Light" : "Dark"}
+      {theme === "dark" ? (
+        <Sun size={20} aria-hidden="true" />
+      ) : (
+        <Moon size={20} aria-hidden="true" />
+      )}
     </button>
   );
 };
