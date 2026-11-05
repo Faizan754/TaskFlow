@@ -1,8 +1,21 @@
-import { useSortable } from "@dnd-kit/sortable";
+import {
+  defaultAnimateLayoutChanges,
+  useSortable,
+  type AnimateLayoutChanges,
+} from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import type { Card } from "../entities/Cards";
 import CardItem from "./CardItem";
 import type { Label } from "../entities/Labels";
+
+// dnd-kit only animates layout changes for the card that was dragged, so the
+// other cards jump when a card enters or leaves their column. Treating every
+// card as "wasDragging" makes them slide instead. With reduced motion we keep
+// dnd-kit's default, so nothing animates that didn't animate before.
+const animateLayoutChanges: AnimateLayoutChanges = (args) =>
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ? defaultAnimateLayoutChanges(args)
+    : defaultAnimateLayoutChanges({ ...args, wasDragging: true });
 
 interface Props {
   card: Card;
@@ -18,7 +31,7 @@ const SortableCard = ({ card, labels, onClick }: Props) => {
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: card.id });
+  } = useSortable({ id: card.id, animateLayoutChanges });
 
   return (
     <li
