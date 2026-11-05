@@ -11,6 +11,19 @@
       name="description"
       content="TaskFlow is a Kanban task board with drag and drop, labels, subtasks and AI subtask suggestions."
     />
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem("theme");
+          var dark = stored
+            ? stored === "dark"
+            : window.matchMedia("(prefers-color-scheme: dark)").matches;
+          if (dark) document.documentElement.classList.add("dark");
+        } catch (e) {
+          /* storage unavailable: keep the default theme */
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

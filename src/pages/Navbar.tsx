@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import myLogo from "../assets/logo.png";
 import UserProfile from "../components/UserProfile";
+import ThemeToggle from "../components/ThemeToggle";
 
 const Navbar = () => {
   return (
@@ -24,6 +25,7 @@ const Navbar = () => {
         </Link>
 
         <div className="flex items-center gap-4">
+          <ThemeToggle />
           <Link
             to="/contact"
             className="text-sm font-semibold text-gray-300 hover:text-white"
