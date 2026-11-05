@@ -9,6 +9,7 @@ import AuthLayout from "./pages/auth/AuthLayout";
 import BoardPage from "./pages/BoardPage";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import ResetPassword from "./pages/auth/ResetPassword";
+import NotFound from "./pages/NotFound";
 
 const router = createBrowserRouter([
   {
@@ -32,6 +33,7 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      { path: "*", element: <NotFound /> },
     ],
   },
   {
