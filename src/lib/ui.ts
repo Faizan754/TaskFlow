@@ -62,3 +62,7 @@ export const authHeading =
 // Fills the space below the navbar and centers the auth card in it.
 export const authPage =
   "flex flex-1 items-center justify-center px-4 py-10 max-md:py-6";
+export const iconTileMd =
+  "grid size-12 place-content-center rounded-[14px] bg-primary-soft text-primary-text";
+export const skel =
+  "bg-linear-90 from-surface-sunken via-border to-surface-sunken bg-size-[200%_100%] animate-[tf-shimmer_1.4s_ease-in-out_infinite] motion-reduce:animate-none";

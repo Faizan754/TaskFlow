@@ -87,3 +87,8 @@ body { @apply bg-bg text-fg font-sans antialiased; }
     opacity: 0;
   }
 }
+
+@keyframes tf-shimmer {
+  0% { background-position: 100% 0 }
+  100% { background-position: -100% 0 }
+}
