@@ -351,7 +351,7 @@ const BoardPage = () => {
         onDragEnd={handleDragEnd}
         onDragCancel={handleDragCancel}
       >
-        <div className="flex items-start gap-4 overflow-x-auto snap-x snap-proximity px-10 pt-1 pb-8 max-md:gap-3 max-md:px-4 max-md:pb-6">
+        <div className="scrollbar-thin flex flex-1 items-start gap-4 overflow-x-auto snap-x snap-proximity scroll-px-10 px-10 pt-1 pb-8 max-md:gap-3 max-md:scroll-px-4 max-md:px-4 max-md:pb-6">
           {columns.map((column) => (
             <BoardColumn
               key={column.id}

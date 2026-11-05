@@ -92,3 +92,9 @@ body { @apply bg-bg text-fg font-sans antialiased; }
   0% { background-position: 100% 0 }
   100% { background-position: -100% 0 }
 }
+
+/* Thin themed scrollbar (board columns row). */
+@utility scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
