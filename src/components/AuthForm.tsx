@@ -1,5 +1,19 @@
 import { useState, type SubmitEvent } from "react";
 import { Link } from "react-router";
+import { CircleAlert, LoaderCircle, Lock, Mail, User } from "lucide-react";
+import {
+  alertDanger,
+  authCard,
+  authHeading,
+  btnBase,
+  btnBrand,
+  btnLg,
+  btnPrimary,
+  inputIcon,
+  inputWithIcon,
+  label,
+  textLink,
+} from "../lib/ui";
 
 interface AuthFormProps {
   title: string;
@@ -40,23 +54,25 @@ const AuthForm = ({
   };
 
   return (
-    <div className="flex min-h-full flex-col items-center justify-center px-6 py-12 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-        <h2 className="text-center text-2xl/9 font-bold tracking-tight text-white">
+    <div className="flex flex-1 items-start justify-center px-4 pt-8 pb-16 max-md:pt-6 max-md:pb-10">
+      <div className={authCard}>
+        <h1 className={authHeading}>
           {title}
-        </h2>
-      </div>
-      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        <form onSubmit={handleSubmit} className="space-y-6">
+        </h1>
+        {error && (
+          <div role="alert" className={alertDanger}>
+            <CircleAlert aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
+            <span>{error}</span>
+          </div>
+        )}
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           {showUsername && (
-            <div>
-              <label
-                htmlFor="username"
-                className="block text-sm/6 font-medium text-gray-100"
-              >
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="username" className={label}>
                 Username
               </label>
-              <div className="mt-2">
+              <div className="relative">
+                <User aria-hidden="true" className={inputIcon} />
                 <input
                   type="text"
                   id="username"
@@ -64,19 +80,17 @@ const AuthForm = ({
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   required
-                  className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
+                  className={inputWithIcon}
                 />
               </div>
             </div>
           )}
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm/6 font-medium text-gray-100"
-            >
-              Email address
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="email" className={label}>
+              Email
             </label>
-            <div className="mt-2">
+            <div className="relative">
+              <Mail aria-hidden="true" className={inputIcon} />
               <input
                 type="email"
                 id="email"
@@ -84,31 +98,27 @@ const AuthForm = ({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
+                className={inputWithIcon}
               />
             </div>
           </div>
 
-          <div>
+          <div className="flex flex-col gap-1.5">
             <div className="flex items-center justify-between">
-              <label
-                htmlFor="password"
-                className="block text-sm/6 font-medium text-gray-100"
-              >
+              <label htmlFor="password" className={label}>
                 Password
               </label>
               {forgotPasswordTo && (
-                <div className="text-sm">
-                  <Link
-                    to={forgotPasswordTo}
-                    className="font-semibold text-indigo-400 hover:text-indigo-300"
-                  >
-                    Forgot password?
-                  </Link>
-                </div>
+                <Link
+                  to={forgotPasswordTo}
+                  className={`${textLink} text-[13px]`}
+                >
+                  Forgot password?
+                </Link>
               )}
             </div>
-            <div className="mt-2">
+            <div className="relative">
+              <Lock aria-hidden="true" className={inputIcon} />
               <input
                 id="password"
                 type="password"
@@ -116,31 +126,36 @@ const AuthForm = ({
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
+                className={inputWithIcon}
               />
             </div>
           </div>
 
-          {error && (
-            <div className="text-center text-sm text-red-500">{error}</div>
-          )}
-
-          <div>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="flex w-full justify-center rounded-md bg-indigo-500 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
-            >
-              {isLoading ? "Loading..." : buttonText}
-            </button>
-          </div>
-        </form>
-        <p className="mt-10 text-center text-sm/6 text-gray-400">
-          {linkText}{" "}
-          <Link
-            to={linkTo}
-            className="font-semibold text-indigo-400 hover:text-indigo-300"
+          <button
+            type="submit"
+            disabled={isLoading}
+            className={
+              showUsername
+                ? `${btnBase} ${btnLg} ${btnBrand} w-full`
+                : `${btnBase} ${btnLg} ${btnPrimary} w-full`
+            }
           >
+            {isLoading ? (
+              <>
+                <LoaderCircle
+                  aria-hidden="true"
+                  className="size-4 animate-spin motion-reduce:animate-none"
+                />
+                {showUsername ? "Creating account…" : "Logging in…"}
+              </>
+            ) : (
+              buttonText
+            )}
+          </button>
+        </form>
+        <p className="text-center text-sm text-muted">
+          {linkText}{" "}
+          <Link to={linkTo} className={textLink}>
             {linkLabel}
           </Link>
         </p>

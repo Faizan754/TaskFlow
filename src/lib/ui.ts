@@ -39,3 +39,23 @@ export const alertDanger =
 
 export const menuItem =
   "flex h-[38px] w-full items-center gap-2.5 rounded-lg px-2.5 text-left text-sm font-medium text-fg cursor-pointer data-focus:bg-surface-sunken data-focus:outline-none max-md:h-11";
+
+export const inputWithIcon =
+  "block h-10 w-full rounded-[10px] border border-border-strong bg-surface pl-[38px] pr-3 text-sm text-fg placeholder:text-placeholder transition-colors hover:border-muted focus:border-focus focus:outline-2 focus:outline-offset-1 focus:outline-focus disabled:cursor-not-allowed disabled:bg-surface-sunken disabled:text-muted max-md:h-11 max-md:text-base motion-reduce:transition-none";
+export const inputIcon =
+  "pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted";
+
+export const authCard =
+  "flex w-full max-w-[440px] flex-col gap-6 rounded-[20px] border border-border bg-surface px-8 py-9 shadow-md max-md:px-5 max-md:py-7";
+export const iconTile =
+  "grid size-14 place-content-center rounded-2xl bg-primary-soft text-primary-text";
+export const iconTileSuccess =
+  "grid size-14 place-content-center rounded-2xl bg-success-soft text-success";
+export const iconTileDanger =
+  "grid size-14 place-content-center rounded-2xl bg-danger-soft text-danger-text";
+export const alertInfo =
+  "flex items-start gap-2.5 rounded-xl bg-surface-sunken px-3.5 py-3 text-sm text-muted";
+export const textLink =
+  "rounded-sm font-semibold text-primary-text hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";
+export const authHeading =
+  "font-display text-2xl leading-8 font-semibold tracking-tight text-fg max-md:text-[21px] max-md:leading-7";
