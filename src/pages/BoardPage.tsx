@@ -7,12 +7,18 @@ import {
   MeasuringStrategy,
   MouseSensor,
   TouchSensor,
+  closestCenter,
   closestCorners,
+  getFirstCollision,
+  pointerWithin,
+  rectIntersection,
   useSensor,
   useSensors,
+  type CollisionDetection,
   type DragEndEvent,
   type DragOverEvent,
   type DragStartEvent,
+  type UniqueIdentifier,
 } from "@dnd-kit/core";
 import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { getColumns } from "../services/columnService";
@@ -74,6 +80,60 @@ const BoardPage = () => {
     }),
   );
 
+  // Cross-column flip-flop guard. Moving a card to another column shifts the
+  // layout, and the next collision check can point back at the old column,
+  // which moves the card back, and so on until React stops with error #185.
+  const lastOverId = useRef<UniqueIdentifier | null>(null);
+  const recentlyMovedToNewColumn = useRef(false);
+
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => {
+      recentlyMovedToNewColumn.current = false;
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [cards]);
+
+  const collisionDetection: CollisionDetection = (args) => {
+    // Keyboard drags have no pointer position: keep the previous strategy.
+    if (!args.pointerCoordinates) return closestCorners(args);
+
+    // Right after a cross-column move, keep the current target for one frame
+    // so the layout settles before collisions are measured again.
+    if (recentlyMovedToNewColumn.current && lastOverId.current != null) {
+      return [{ id: lastOverId.current }];
+    }
+
+    const pointerHits = pointerWithin(args);
+    const hits = pointerHits.length > 0 ? pointerHits : rectIntersection(args);
+    let overId = getFirstCollision(hits, "id");
+
+    if (overId != null) {
+      // Over a column that has cards: use the closest card inside it.
+      const columnId = overId;
+      if (columns.some((column) => column.id === columnId)) {
+        const cardIds = new Set(
+          cards
+            .filter((card) => card.column_id === columnId)
+            .map((card) => card.id),
+        );
+        if (cardIds.size > 0) {
+          overId =
+            closestCenter({
+              ...args,
+              droppableContainers: args.droppableContainers.filter(
+                (container) => cardIds.has(String(container.id)),
+              ),
+            })[0]?.id ?? overId;
+        }
+      }
+      lastOverId.current = overId;
+      return [{ id: overId }];
+    }
+
+    // Over nothing (e.g. the gap between columns): keep the last target.
+    return lastOverId.current != null ? [{ id: lastOverId.current }] : [];
+  };
+
   useEffect(() => {
     async function load() {
       try {
@@ -119,6 +179,7 @@ const BoardPage = () => {
   const handleDragStart = ({ active }: DragStartEvent) => {
     setMoveError(null);
     dragSnapshot.current = cards;
+    lastOverId.current = null;
     setActiveCard(cards.find((card) => card.id === String(active.id)) ?? null);
   };
 
@@ -139,8 +200,14 @@ const BoardPage = () => {
     if (!targetColumnId || targetColumnId === dragged.column_id) return;
 
     setCards((prev) => {
+      // `dragged` comes from the last render. If an earlier dragover already
+      // moved the card before React re-rendered, this is a no-op: return prev.
+      const current = prev.find((card) => card.id === activeId);
+      if (!current || current.column_id === targetColumnId) return prev;
+      recentlyMovedToNewColumn.current = true;
+
       const withoutDragged = prev.filter((card) => card.id !== activeId);
-      const moved = { ...dragged, column_id: targetColumnId };
+      const moved = { ...current, column_id: targetColumnId };
 
       if (!overCard) return [...withoutDragged, moved];
 
@@ -277,7 +344,7 @@ const BoardPage = () => {
 
       <DndContext
         sensors={sensors}
-        collisionDetection={closestCorners}
+        collisionDetection={collisionDetection}
         measuring={{ droppable: { strategy: MeasuringStrategy.Always } }}
         onDragStart={handleDragStart}
         onDragOver={handleDragOver}
