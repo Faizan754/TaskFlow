@@ -40,6 +40,7 @@ const Login = () => {
       linkLabel="Sign up"
       linkTo="/signup"
       showUsername={false}
+      forgotPasswordTo="/forgot-password"
     />
   );
 };

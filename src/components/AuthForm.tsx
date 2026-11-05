@@ -10,6 +10,7 @@ interface AuthFormProps {
   linkLabel: string;
   linkText: string;
   showUsername: boolean;
+  forgotPasswordTo?: string;
   onSubmit: (
     username: string,
     email: string,
@@ -26,6 +27,7 @@ const AuthForm = ({
   linkLabel,
   linkText,
   showUsername,
+  forgotPasswordTo,
   onSubmit,
 }: AuthFormProps) => {
   const [email, setEmail] = useState("");
@@ -95,14 +97,16 @@ const AuthForm = ({
               >
                 Password
               </label>
-              <div className="text-sm">
-                <a
-                  href="#"
-                  className="font-semibold text-indigo-400 hover:text-indigo-300"
-                >
-                  Forgot password?
-                </a>
-              </div>
+              {forgotPasswordTo && (
+                <div className="text-sm">
+                  <Link
+                    to={forgotPasswordTo}
+                    className="font-semibold text-indigo-400 hover:text-indigo-300"
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
+              )}
             </div>
             <div className="mt-2">
               <input
