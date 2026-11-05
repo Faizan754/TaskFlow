@@ -23,7 +23,15 @@ const Navbar = () => {
           </span>
         </Link>
 
-        <UserProfile />
+        <div className="flex items-center gap-4">
+          <Link
+            to="/contact"
+            className="text-sm font-semibold text-gray-300 hover:text-white"
+          >
+            Contact
+          </Link>
+          <UserProfile />
+        </div>
       </div>
     </nav>
   );

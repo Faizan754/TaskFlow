@@ -10,6 +10,7 @@ import BoardPage from "./pages/BoardPage";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import ResetPassword from "./pages/auth/ResetPassword";
 import NotFound from "./pages/NotFound";
+import Contact from "./pages/Contact";
 
 const router = createBrowserRouter([
   {
@@ -33,6 +34,7 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      { path: "contact", element: <Contact /> },
       { path: "*", element: <NotFound /> },
     ],
   },
