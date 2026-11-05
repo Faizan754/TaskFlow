@@ -8,6 +8,30 @@ import {
   toggleSubtask,
 } from "../services/subtaskService";
 import { suggestSubtasks, type LlmProvider } from "../services/aiService";
+import {
+  ChevronDown,
+  CircleAlert,
+  ListChecks,
+  LoaderCircle,
+  Plus,
+  Sparkles,
+  X,
+} from "lucide-react";
+import {
+  alertDanger,
+  btnBase,
+  btnBrand,
+  btnGhost,
+  btnIconSm,
+  btnMd,
+  btnSecondary,
+  fieldError,
+  inputFlex,
+  inputFlexSm,
+  sectionHeading,
+  selectSm,
+  skel,
+} from "../lib/ui";
 
 interface Props {
   cardId: string;
@@ -152,99 +176,174 @@ const SubtaskList = ({ cardId, cardTitle, cardDescription }: Props) => {
   const doneCount = subtasks.filter((subtask) => subtask.is_done).length;
 
   return (
-    <div className="space-y-3 border-t border-gray-200 pt-4">
-      <div className="flex items-center justify-between">
-        <h4 className="text-sm font-semibold text-gray-700">Subtasks</h4>
+    <div className="flex flex-col gap-2.5">
+      <div className="flex items-center gap-2">
+        <h4 className={sectionHeading}>
+          <ListChecks className="size-4 text-muted" aria-hidden="true" />
+          Subtasks
+        </h4>
         {subtasks.length > 0 && (
-          <span className="text-xs text-gray-500">
+          <span className="ml-auto text-xs font-semibold text-muted">
             {doneCount}/{subtasks.length} done
           </span>
         )}
       </div>
 
+      {subtasks.length > 0 && (
+        <div
+          role="progressbar"
+          aria-label="Subtasks complete"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={Math.round((doneCount / subtasks.length) * 100)}
+          className="h-1.5 overflow-hidden rounded-full bg-surface-sunken"
+        >
+          <div
+            className="h-full rounded-full bg-linear-90 from-[#1a6bff] to-[#4b2ae8] transition-[width] duration-300 motion-reduce:transition-none"
+            style={{ width: `${(doneCount / subtasks.length) * 100}%` }}
+          />
+        </div>
+      )}
+
       {loading ? (
-        <p className="text-sm text-gray-400">Loading...</p>
+        <p className="text-sm text-muted">Loading…</p>
       ) : (
-        <ul className="space-y-1">
+        <ul className="flex flex-col gap-0.5">
           {subtasks.map((subtask) => (
-            <li key={subtask.id} className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={subtask.is_done}
-                onChange={() => handleToggle(subtask)}
-                className="h-4 w-4 cursor-pointer"
-              />
-              <span
-                className={`flex-1 text-sm ${
-                  subtask.is_done
-                    ? "text-gray-400 line-through"
-                    : "text-gray-800"
-                }`}
-              >
-                {subtask.title}
-              </span>
+            <li
+              key={subtask.id}
+              className="flex min-h-10 items-center gap-2.5 rounded-[10px] pr-1.5 pl-2 hover:bg-surface-sunken max-md:min-h-11"
+            >
+              <label className="flex min-w-0 flex-1 cursor-pointer items-center gap-2.5 self-stretch">
+                <input
+                  type="checkbox"
+                  checked={subtask.is_done}
+                  onChange={() => handleToggle(subtask)}
+                  className="size-5 shrink-0 cursor-pointer accent-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+                />
+                <span
+                  className={
+                    subtask.is_done
+                      ? "min-w-0 break-words text-sm text-muted line-through"
+                      : "min-w-0 break-words text-sm text-fg"
+                  }
+                >
+                  {subtask.title}
+                </span>
+              </label>
               <button
                 type="button"
                 onClick={() => handleDelete(subtask.id)}
                 aria-label={`Delete subtask ${subtask.title}`}
-                className="px-1 text-gray-400 hover:text-red-600"
+                className={`${btnBase} ${btnIconSm} ${btnGhost}`}
               >
-                ×
+                <X className="size-4" aria-hidden="true" />
               </button>
             </li>
           ))}
         </ul>
       )}
 
-      {error && <p className="text-xs text-red-600">{error}</p>}
+      {error && (
+        <p className={fieldError}>
+          <CircleAlert className="size-4 shrink-0" aria-hidden="true" />
+          {error}
+        </p>
+      )}
 
       <form onSubmit={handleAdd} className="flex gap-2">
         <input
           value={newTitle}
           onChange={(e) => setNewTitle(e.target.value)}
-          placeholder="Add a subtask"
-          className="flex-1 rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-900 placeholder:text-gray-400"
+          placeholder="Add a subtask…"
+          aria-label="New subtask"
+          className={inputFlex}
         />
         <button
           type="submit"
           disabled={adding || !newTitle.trim()}
-          className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
+          className={`${btnBase} ${btnMd} ${btnSecondary}`}
         >
+          <Plus className="size-4" aria-hidden="true" />
           Add
         </button>
       </form>
 
-      <div className="space-y-2">
-        <div className="flex items-center gap-2">
-          <select
-            value={provider}
-            onChange={(e) => setProvider(e.target.value as LlmProvider)}
-            aria-label="AI provider"
-            className="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900"
+      <div className="flex flex-col gap-3 rounded-2xl border border-border bg-surface-sunken p-4">
+        <div className="flex flex-wrap items-center gap-2.5">
+          <span
+            aria-hidden="true"
+            className="grid size-8 place-content-center rounded-[10px] bg-linear-135 from-[#1a6bff] to-[#4b2ae8] text-white"
           >
-            <option value="gemini">Gemini</option>
-            <option value="groq">Groq</option>
-          </select>
+            <Sparkles className="size-4" />
+          </span>
+          <div className="mr-auto flex flex-col">
+            <span className="text-[13px] leading-[18px] font-semibold text-fg">
+              AI subtask ideas
+            </span>
+            <span className="text-xs text-muted">
+              Based on the title and description.
+            </span>
+          </div>
+          <div className="relative w-32">
+            <select
+              value={provider}
+              onChange={(e) => setProvider(e.target.value as LlmProvider)}
+              aria-label="AI provider"
+              className={selectSm}
+            >
+              <option value="gemini">Gemini</option>
+              <option value="groq">Groq</option>
+            </select>
+            <ChevronDown
+              className="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-muted"
+              aria-hidden="true"
+            />
+          </div>
           <button
             type="button"
             onClick={handleSuggest}
             disabled={suggesting}
-            className="rounded-md border border-blue-600 px-3 py-1.5 text-sm font-semibold text-blue-600 hover:bg-blue-50 disabled:opacity-50"
+            className={`${btnBase} ${btnMd} ${btnSecondary}`}
           >
-            {suggesting ? "Thinking..." : "Suggest subtasks"}
+            {suggesting ? (
+              <LoaderCircle
+                className="size-4 animate-spin motion-reduce:animate-none"
+                aria-hidden="true"
+              />
+            ) : (
+              <Sparkles className="size-4" aria-hidden="true" />
+            )}
+            {suggesting ? "Thinking…" : "Suggest subtasks"}
           </button>
         </div>
 
-        {aiError && <p className="text-xs text-red-600">{aiError}</p>}
+        {suggesting && (
+          <div aria-hidden="true" className="flex flex-col gap-2.5">
+            <div className={`${skel} h-9 w-full rounded-[10px]`} />
+            <div className={`${skel} h-9 w-[85%] rounded-[10px]`} />
+            <div className={`${skel} h-9 w-[70%] rounded-[10px]`} />
+          </div>
+        )}
+
+        {aiError && (
+          <p role="alert" className={alertDanger}>
+            <CircleAlert
+              className="mt-0.5 size-4 shrink-0"
+              aria-hidden="true"
+            />
+            {aiError}
+          </p>
+        )}
 
         {suggestions.length > 0 && (
-          <div className="space-y-2 rounded-md border border-blue-200 bg-blue-50 p-3">
-            <p className="text-xs font-semibold text-blue-800">
-              Suggestions: edit or untick before adding
+          <>
+            <p className="text-xs text-muted">
+              Edit any line before adding. Unchecked ones are skipped.
             </p>
-            <ul className="space-y-1">
+            <ul className="flex flex-col gap-2">
               {suggestions.map((suggestion, index) => (
-                <li key={index} className="flex items-center gap-2">
+                <li key={index} className="flex items-center gap-2.5">
                   <input
                     type="checkbox"
                     checked={suggestion.checked}
@@ -257,7 +356,8 @@ const SubtaskList = ({ cardId, cardTitle, cardDescription }: Props) => {
                         ),
                       )
                     }
-                    className="h-4 w-4 cursor-pointer"
+                    aria-label={`Include: ${suggestion.text}`}
+                    className="size-5 shrink-0 cursor-pointer accent-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
                   />
                   <input
                     value={suggestion.text}
@@ -270,16 +370,17 @@ const SubtaskList = ({ cardId, cardTitle, cardDescription }: Props) => {
                         ),
                       )
                     }
-                    className="flex-1 rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-900"
+                    aria-label={`Edit suggestion ${index + 1}`}
+                    className={inputFlexSm}
                   />
                 </li>
               ))}
             </ul>
-            <div className="flex justify-end gap-2">
+            <div className="flex flex-wrap items-center justify-end gap-2">
               <button
                 type="button"
                 onClick={() => setSuggestions([])}
-                className="rounded-md px-3 py-1.5 text-sm text-gray-600 hover:bg-white"
+                className={`${btnBase} ${btnMd} ${btnGhost}`}
               >
                 Discard
               </button>
@@ -287,14 +388,22 @@ const SubtaskList = ({ cardId, cardTitle, cardDescription }: Props) => {
                 type="button"
                 onClick={handleAcceptSuggestions}
                 disabled={savingSuggestions || selectedTitles.length === 0}
-                className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
+                className={`${btnBase} ${btnMd} ${btnBrand}`}
               >
+                {savingSuggestions ? (
+                  <LoaderCircle
+                    className="size-4 animate-spin motion-reduce:animate-none"
+                    aria-hidden="true"
+                  />
+                ) : (
+                  <Plus className="size-4" aria-hidden="true" />
+                )}
                 {savingSuggestions
-                  ? "Adding..."
+                  ? "Adding…"
                   : `Add selected (${selectedTitles.length})`}
               </button>
             </div>
-          </div>
+          </>
         )}
       </div>
     </div>

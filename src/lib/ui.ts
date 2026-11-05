@@ -68,5 +68,17 @@ export const inputSm =
   "block h-8 min-w-0 flex-1 rounded-[10px] border border-border-strong bg-surface px-3 text-sm text-fg placeholder:text-placeholder transition-colors hover:border-muted focus:border-focus focus:outline-2 focus:outline-offset-1 focus:outline-focus disabled:cursor-not-allowed disabled:bg-surface-sunken disabled:text-muted max-md:h-11 max-md:text-base motion-reduce:transition-none";
 export const addCardBtn =
   "flex h-10 w-full cursor-pointer items-center gap-2 rounded-[10px] px-2.5 text-[13px] font-semibold text-muted transition-colors hover:bg-surface hover:text-fg motion-reduce:transition-none max-md:h-11 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";
+export const sectionHeading =
+  "flex items-center gap-1.5 text-[13px] leading-[18px] font-semibold text-fg";
+export const select =
+  "block h-10 w-full appearance-none cursor-pointer rounded-[10px] border border-border-strong bg-surface pl-3 pr-9 text-sm text-fg transition-colors hover:border-muted focus:border-focus focus:outline-2 focus:outline-offset-1 focus:outline-focus disabled:cursor-not-allowed disabled:bg-surface-sunken disabled:text-muted max-md:h-11 max-md:text-base motion-reduce:transition-none";
+export const selectSm =
+  "block h-9 w-full appearance-none cursor-pointer rounded-[10px] border border-border-strong bg-surface pl-3 pr-9 text-sm text-fg transition-colors hover:border-muted focus:border-focus focus:outline-2 focus:outline-offset-1 focus:outline-focus disabled:cursor-not-allowed disabled:bg-surface-sunken disabled:text-muted max-md:h-11 max-md:text-base motion-reduce:transition-none";
+export const inputFlex =
+  "block h-10 min-w-0 flex-1 rounded-[10px] border border-border-strong bg-surface px-3 text-sm text-fg placeholder:text-placeholder transition-colors hover:border-muted focus:border-focus focus:outline-2 focus:outline-offset-1 focus:outline-focus disabled:cursor-not-allowed disabled:bg-surface-sunken disabled:text-muted max-md:h-11 max-md:text-base motion-reduce:transition-none";
+export const inputFlexSm =
+  "block h-9 min-w-0 flex-1 rounded-[10px] border border-border-strong bg-surface px-3 text-sm text-fg placeholder:text-placeholder transition-colors hover:border-muted focus:border-focus focus:outline-2 focus:outline-offset-1 focus:outline-focus disabled:cursor-not-allowed disabled:bg-surface-sunken disabled:text-muted max-md:h-11 max-md:text-base motion-reduce:transition-none";
+export const textareaTall =
+  "block min-h-[168px] w-full resize-y rounded-[10px] border border-border-strong bg-surface px-3 py-2.5 text-sm text-fg placeholder:text-placeholder transition-colors hover:border-muted focus:border-focus focus:outline-2 focus:outline-offset-1 focus:outline-focus disabled:cursor-not-allowed disabled:bg-surface-sunken disabled:text-muted max-md:text-base motion-reduce:transition-none";
 export const skel =
   "bg-linear-90 from-surface-sunken via-border to-surface-sunken bg-size-[200%_100%] animate-[tf-shimmer_1.4s_ease-in-out_infinite] motion-reduce:animate-none";
