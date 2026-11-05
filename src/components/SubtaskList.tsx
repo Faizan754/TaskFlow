@@ -10,6 +10,7 @@ import {
 import { suggestSubtasks, type LlmProvider } from "../services/aiService";
 import {
   ChevronDown,
+  Check,
   CircleAlert,
   ListChecks,
   LoaderCircle,
@@ -26,6 +27,8 @@ import {
   btnIconSm,
   btnMd,
   btnSecondary,
+  checkbox,
+  checkboxIcon,
   fieldError,
   inputFlex,
   inputFlexSm,
@@ -216,12 +219,19 @@ const SubtaskList = ({ cardId, cardTitle, cardDescription }: Props) => {
               className="flex min-h-10 items-center gap-2.5 rounded-[10px] pr-1.5 pl-2 hover:bg-surface-sunken max-md:min-h-11"
             >
               <label className="flex min-w-0 flex-1 cursor-pointer items-center gap-2.5 self-stretch">
-                <input
-                  type="checkbox"
-                  checked={subtask.is_done}
-                  onChange={() => handleToggle(subtask)}
-                  className="size-5 shrink-0 cursor-pointer accent-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
-                />
+                <span className="relative grid size-5 shrink-0 place-items-center">
+                  <input
+                    type="checkbox"
+                    checked={subtask.is_done}
+                    onChange={() => handleToggle(subtask)}
+                    className={checkbox}
+                  />
+                  <Check
+                    aria-hidden="true"
+                    className={checkboxIcon}
+                    strokeWidth={3}
+                  />
+                </span>
                 <span
                   className={
                     subtask.is_done
@@ -345,21 +355,28 @@ const SubtaskList = ({ cardId, cardTitle, cardDescription }: Props) => {
             <ul className="flex flex-col gap-2">
               {suggestions.map((suggestion, index) => (
                 <li key={index} className="flex items-center gap-2.5">
-                  <input
-                    type="checkbox"
-                    checked={suggestion.checked}
-                    onChange={() =>
-                      setSuggestions((prev) =>
-                        prev.map((item, i) =>
-                          i === index
-                            ? { ...item, checked: !item.checked }
-                            : item,
-                        ),
-                      )
-                    }
-                    aria-label={`Include: ${suggestion.text}`}
-                    className="size-5 shrink-0 cursor-pointer accent-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
-                  />
+                  <span className="relative grid size-5 shrink-0 place-items-center">
+                    <input
+                      type="checkbox"
+                      checked={suggestion.checked}
+                      onChange={() =>
+                        setSuggestions((prev) =>
+                          prev.map((item, i) =>
+                            i === index
+                              ? { ...item, checked: !item.checked }
+                              : item,
+                          ),
+                        )
+                      }
+                      aria-label={`Include: ${suggestion.text}`}
+                      className={checkbox}
+                    />
+                    <Check
+                      aria-hidden="true"
+                      className={checkboxIcon}
+                      strokeWidth={3}
+                    />
+                  </span>
                   <input
                     value={suggestion.text}
                     onChange={(e) =>

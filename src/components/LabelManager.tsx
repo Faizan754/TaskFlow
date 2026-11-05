@@ -143,6 +143,7 @@ const LabelManager = ({ boardId, labels, onCreated, onDeleted }: Props) => {
           placeholder="Label name"
           maxLength={30}
           aria-label="Label name"
+          data-autofocus
           className={input}
         />
         <div
