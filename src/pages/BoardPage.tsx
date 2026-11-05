@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router";
+import { Link, useParams } from "react-router";
 import {
   DndContext,
   DragOverlay,
@@ -30,7 +30,7 @@ import { getLabels, getCardLabels } from "../services/labelService";
 import type { Label, CardLabel } from "../entities/Labels";
 import LabelManager from "../components/LabelManager";
 import Modal from "../components/Modal";
-import { CircleAlert, Tag } from "lucide-react";
+import { ArrowLeft, CircleAlert, Tag } from "lucide-react";
 import { alertDanger, btnBase, btnMd, btnSecondary } from "../lib/ui";
 
 function withNormalizedPositions(cards: Card[]): Card[] {
@@ -243,6 +243,13 @@ const BoardPage = () => {
   return (
     <div className="flex min-w-0 flex-1 flex-col">
       <div className="flex flex-col gap-2.5 px-10 pt-6 pb-4 max-md:px-4 max-md:pt-4">
+        <Link
+          to="/dashboard"
+          className="inline-flex min-h-8 items-center gap-1.5 self-start rounded-md text-sm text-muted hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus max-md:min-h-11"
+        >
+          <ArrowLeft className="size-4" aria-hidden="true" />
+          All boards
+        </Link>
         <div className="flex flex-wrap items-center gap-3">
           <h1 className="mr-auto min-w-0 font-display text-[36px] leading-[44px] font-bold tracking-tight break-words text-fg max-md:text-[28px] max-md:leading-9">
             {board.title}
@@ -359,11 +366,12 @@ const BoardPage = () => {
           )
         }
         onClose={() => setSelectedCard(null)}
-        onUpdated={(updated) =>
+        onUpdated={(updated) => {
           setCards((prev) =>
             prev.map((card) => (card.id === updated.id ? updated : card)),
-          )
-        }
+          );
+          setSelectedCard(updated);
+        }}
         onDeleted={(id) =>
           setCards((prev) => prev.filter((card) => card.id !== id))
         }
